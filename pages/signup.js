@@ -2,8 +2,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -12,6 +10,11 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Copyright from '../components/Copyright';
 import { makeStyles } from '@material-ui/core';
+import { useEffect, useState } from 'react';
+import { checkPassword , checkEmail, checkname, checkCid } from '../lib/func'
+import { useSnackbar } from 'notistack';
+import { useAuth } from '../lib/auth'
+import { useRouter } from 'next/router'
 
 
 const useStyles = makeStyles({
@@ -31,7 +34,55 @@ const useStyles = makeStyles({
 })
 
 export default function SignUp() {
+
+  const { user } = useAuth();
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const [ firstName, setFirstName ] = useState('');
+  const [ lastName, setLastName ] = useState('');
+  const [ final, setFinal ] = useState('');
+  const [ emailError, setEmailError ] = useState('');
+  const [ passwordError, setPasswordError ] = useState('');
+  const [ cidError, setCidError ]  = useState('');
+  const [ firstNameError, setFirstNameError ] = useState('');
+  const [ lastNameError, setLastNameError ] = useState('');
+  const [ cid, setCid ] = useState('');
+
+  const { signupWithEmail } = useAuth();
+
+  useEffect(()=> {
+    if(user){
+      router.push('/dashboard/1')
+    }
+  },[user])
+
+
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+      setPasswordError(checkPassword(password,final));
+      setEmailError(checkEmail(email));
+      setFirstNameError(checkname(firstName));
+      setLastNameError(checkname(lastName));
+      setCidError(checkCid(cid));
+      if(emailError==='' && passwordError==='' && firstNameError==='' && lastNameError==='' && cidError===''){
+        try{
+          signupWithEmail(email, password, firstName, 0, lastName, cid);
+        }
+        catch(E){
+          enqueueSnackbar('Register error try again!',{variant:'error'});
+        }
+        return;
+      }
+    
+  }
+
+
+
   return (
     <Container component="main" maxWidth="sm" className={classes.root}>
       <CssBaseline />
@@ -58,6 +109,10 @@ export default function SignUp() {
                 name="firstName"
                 required
                 fullWidth
+                value={firstName}
+                onChange={(Event)=>setFirstName(Event.target.value)}
+                error={firstNameError!=''}
+                helperText={firstNameError}
                 id="firstName"
                 label="First Name"
                 variant="outlined"
@@ -69,17 +124,41 @@ export default function SignUp() {
                 required
                 fullWidth
                 id="lastName"
+                value={lastName}
+                onChange={(Event)=>setLastName(Event.target.value)}
+                error={lastNameError!=''}
+                helperText={lastNameError}
                 label="Last Name"
                 name="lastName"
                 variant="outlined"
                 autoComplete="lname"
               />
             </Grid>
+            <Grid item xs={12} >
+              <TextField
+                  autoComplete="cid"
+                  name="collegeId"
+                  required
+                  fullWidth
+                  id="clgid"
+                  value={cid}
+                  onChange={(Event)=>setCid(Event.target.value)}
+                  error={cidError!=''}
+                  helperText={cidError}
+                  label="College ID"
+                  autoFocus
+                  variant="outlined"
+              />
+              </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
+                value={email}
+                onChange={(Event)=>setEmail(Event.target.value)}
                 id="email"
+                error={emailError!=''}
+                helperText={emailError}
                 label="Email Address"
                 name="email"
                 variant="outlined"
@@ -90,6 +169,10 @@ export default function SignUp() {
               <TextField
                 required
                 fullWidth
+                value={password}
+                onChange={(Event)=>setPassword(Event.target.value)}
+                error={passwordError!=''}
+                helperText={passwordError}
                 name="password"
                 label="Password"
                 type="password"
@@ -101,6 +184,10 @@ export default function SignUp() {
               <TextField
                 required
                 fullWidth
+                value={final}
+                onChange={(Event)=>setFinal(Event.target.value)}
+                error={passwordError!=''}
+                helperText={passwordError}
                 name="cpassword"
                 label="Confirm Password"
                 type="password"
@@ -115,10 +202,10 @@ export default function SignUp() {
               />
             </Grid> */}
           </Grid>
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
+          <Button type="submit" onClick={handleSignUp} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
             Sign Up
           </Button>
-          <Grid container justifyContent="flex-end" className={classes.button}>
+          <Grid container justify="flex-end" className={classes.button}>
             <Grid item>
               <Link href="/signin" variant="body2">
                 Already have an account? Sign in

@@ -7,6 +7,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
+import Pagination from '@material-ui/lab/Pagination';
+import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,82 +23,74 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
       alignSelf:'center',
       alignContent:'center'
+  },
+  item: {
+    padding: theme.spacing(1.2)
+  },
+  avatar: { marginRight: theme.spacing(5) },
+  paginator: {
+    justifyContent: "center",
+    padding: "10px"
   }
 }));
 
 export default function AlignItemsList(props) {
   const classes = useStyles();
+  const itemsPerPage = 10;
+  const [page, setPage] = React.useState(1);
+  const [noOfPages] = React.useState(
+    Math.ceil(props.users.length / itemsPerPage)
+  );
+
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
-    <List className={classes.root}>
-     {props.users.map((user) => {
-         return (
-             <div className={classes.root}>
-            <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                <Avatar alt={user.first_name} src="/static/images/avatar/1.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                    primary={user.first_name +" "+user.last_name}
-                    secondary={
-                    <React.Fragment>
-                    {user.id}
-                    </React.Fragment>
-                }
-                />
-              
-                <Typography variant='inherit'>
-                    {user.foe}
-                </Typography>   
-            </ListItem>
-            <Divider variant="inset" component="li" />
-            </div>
-         )
-     })}
-      
-      {/* <ListItem alignItems="flex-start">
-        <ListItemAvatar>
-          <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-        </ListItemAvatar>
-        <ListItemText
-          primary="Summer BBQ"
-          secondary={
-            <React.Fragment>
-              <Typography
-                component="span"
-                variant="body2"
-                className={classes.inline}
-                color="textPrimary"
-              >
-                to Scott, Alex, Jennifer
-              </Typography>
-              {" — Wish I could come, but I'm out of town this…"}
-            </React.Fragment>
-          }
-        />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-      <ListItem alignItems="flex-start">
-        <ListItemAvatar>
-          <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-        </ListItemAvatar>
-        <ListItemText
-          primary="Oui Oui"
-          secondary={
-            <React.Fragment>
-              <Typography
-                component="span"
-                variant="body2"
-                className={classes.inline}
-                color="textPrimary"
-              >
-                Sandra Adams
-              </Typography>
-              {' — Do you have Paris recommendations? Have you ever…'}
-            </React.Fragment>
-          }
-        />
-      </ListItem> */}
-    </List>
+    <div  className={classes.root} >
+        <Divider />
+      <List >
+          {props.users
+          .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+          .map((user,index) => {
+              return (
+                  <div key={index} className={classes.root}>
+                    
+                      <ListItem alignItems="flex-start">
+                        <ListItemAvatar>
+                        <Avatar alt={user.first_name} src="/static/images/avatar/1.jpg" />
+                        </ListItemAvatar>
+                        <ListItemText
+                            className={classes.item}
+                            primary={user.first_name +" "+user.last_name}
+                            secondary={
+                            <React.Fragment>
+                            {user.cid}
+                            </React.Fragment>
+                        }
+                        />
+                        <Typography variant='inherit'>
+                            {user.foe || user.email}
+                        </Typography>   
+                    </ListItem>
+                    </div>
+              )
+          })}
+      </List>
+        <Divider />
+        
+        <Box component="span">
+          <Pagination
+            count={noOfPages}
+            page={page}
+            onChange={handleChange}
+            defaultPage={1}
+            size="large"
+            showFirstButton
+            showLastButton
+            classes={{ ul: classes.paginator }}
+          />
+        </Box>
+    </div>
   );
 }

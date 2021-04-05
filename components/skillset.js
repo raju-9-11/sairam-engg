@@ -10,6 +10,10 @@ import Container from '@material-ui/core/Container';
 import Copyright from './Copyright';
 import data from '../pages/api/mock.json';
 import FullScreenDialog from './Modal';
+import { useAuth } from '../lib/auth';
+import { useEffect, useState } from 'react';
+import firebase from '../lib/firebase'
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,8 +64,26 @@ const useStyles = makeStyles((theme) => ({
   
 
 export default function Skillset () {
+
     const classes = useStyles();
-    const cards = data.data;
+    const [ cards , setCards ] = useState([]);
+    const firestore = firebase.firestore()
+
+    useEffect(()=>{ 
+      firestore 
+        .collection('skills')
+        .get()
+        .then((response) => {
+          var lst = []
+          response.forEach((dat)=>{
+            console.log(dat.id)
+            lst.push(dat.data());
+          })
+          setCards(lst)
+        })
+    },[])
+
+
     return (
         <div className={classes.root}>
             <main>
@@ -97,14 +119,13 @@ export default function Skillset () {
           <Container className={classes.cardGrid} maxWidth="md">
             {/* End hero unit */}
             <Grid container spacing={4}>
-              {cards.map((card) => (
-                <Grid item key={card.id} xs={12} sm={6} md={4}>
+              {cards.map((card,index) => (
+                <Grid item key={index} xs={12} sm={6} md={4}>
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
                       image={card.image}
-                      // "https://source.unsplash.com/random"
-                      title={card.skill}
+                      title={card.name}
                     />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
@@ -115,9 +136,7 @@ export default function Skillset () {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      {/* <Button size="small">Update skill points</Button> */}
-                      <FullScreenDialog skill={card.skill} />
-                      {/* <Button size="small">Edit</Button> */}
+                      <FullScreenDialog skill={card} />
                     </CardActions>
                   </Card>
                 </Grid>

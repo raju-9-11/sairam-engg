@@ -16,6 +16,8 @@ import Skillset from '../../components/skillset';
 import Profileupdate from '../../components/profileupdate';
 import Foe from '../../components/foe';
 import { useRouter } from 'next/router'
+import { useAuth } from '../../lib/auth';
+import firebase from '../../lib/firebase'
 
 const useStyles = makeStyles((theme) => ({
   log: {
@@ -63,6 +65,7 @@ export default function Dashboard() {
   const classes = useStyles();
   const router = useRouter();
   const { id } = router.query
+
 
   return (
     <React.Fragment>

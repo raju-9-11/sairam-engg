@@ -54,8 +54,6 @@ export default function AdminLayout(props) {
             </Head>
               {props.AppBar==true && (
                   <AdminDrawer name={props.name} />
-                // <Toolbar>
-                // </Toolbar>
               )}
         </div>
     )

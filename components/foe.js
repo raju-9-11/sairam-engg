@@ -2,14 +2,14 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Copyright from './Copyright';
+import firebase from '../lib/firebase'
 import data from '../pages/api/mock.json';
 import FullScreenDialog from './Modal';
+import { useState , useEffect } from 'react';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -61,7 +61,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Foe () {
     const classes = useStyles();
-    const cards = data.Fields;
+    const [ cards, setCards ] = useState([]);
+    const firestore = firebase.firestore()
+
+    useEffect(()=>{ 
+      firestore 
+        .collection('fields')
+        .get()
+        .then((response) => {
+          var lst = []
+          response.forEach((dat)=>{
+            // console.log(dat.data())
+            lst.push(dat.data());
+          })
+          setCards(lst)
+        })
+    },[])
     return (
         <div className={classes.root}>
             <main>
@@ -82,27 +97,24 @@ export default function Foe () {
           <Container className={classes.cardGrid} maxWidth="md">
             {/* End hero unit */}
             <Grid container spacing={4}>
-              {cards.map((card) => (
-                <Grid item key={card.id} xs={12} sm={6} md={4}>
+              {cards.map((card,index) => (
+                <Grid item key={index} xs={12} sm={6} md={4}>
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
                       image={card.image}
-                      // "https://source.unsplash.com/random"
-                      title={card.skill}
+                      title={card.name}
                     />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        {card.skill}
+                        {card.name}
                       </Typography>
                       <Typography>
                         {card.description}
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      {/* <Button size="small">Update skill points</Button> */}
-                      <FullScreenDialog skill={card.skill} />
-                      {/* <Button size="small">Edit</Button> */}
+                      <FullScreenDialog skill={card} />
                     </CardActions>
                   </Card>
                 </Grid>

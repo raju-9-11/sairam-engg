@@ -12,8 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Copyright from '../components/Copyright'
-import { useRouter } from 'next/router'
 import Head from 'next/head';
+import { useAuth } from '../lib/auth'
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,11 +44,26 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const classes = useStyles();
-  const router = useRouter();
+
+  const { user, loading, signinWithEmail } = useAuth();
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
+
+  // useEffect(()=> {
+  //   if(user){
+  //     router.push('/dashboard/1')
+  //   }
+  // },[user])
+
 
   const handleClick = (e) => {
     e.preventDefault();
-    router.push("/dashboard/1")
+    try{ 
+      signinWithEmail(email,password,'/dashboard/1');
+    }
+    catch(e) {
+      enqueueSnackbar('Register error try again!',{variant:'error'});
+    }
   }
 
   return (
@@ -89,6 +105,8 @@ export default function Login() {
               id="email"
               label="Email Address"
               name="email"
+              onChange={(Event)=>setEmail(Event.target.value)}
+              value={email}
               autoComplete="email"
               variant="outlined"
               autoFocus
@@ -100,6 +118,8 @@ export default function Login() {
               name="password"
               label="Password"
               type="password"
+              value={password}
+              onChange={(Event)=>setPassword(Event.target.value)}
               variant="outlined"
               id="password"
               autoComplete="current-password"

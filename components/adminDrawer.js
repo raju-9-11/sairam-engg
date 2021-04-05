@@ -19,6 +19,8 @@ import { useRouter } from 'next/router';
 import PersonIcon from '@material-ui/icons/Person'
 import BookIcon from '@material-ui/icons/Book';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import GroupIcon from '@material-ui/icons/Group';
+
 
 const drawerWidth = 240;
 
@@ -72,7 +74,7 @@ function AdminDrawer(props) {
       if(index==4){
           router.push("/signin")
       }else{
-          // router.push(`/dashboard/${index+1}`)
+          router.push(`/admin/${index+1}`)
       }
   }
 
@@ -81,9 +83,9 @@ function AdminDrawer(props) {
       <div className={classes.toolbar} />
       <Divider />
       <List>
-        {['Filter ', 'Skill Set', 'Field of Expertise'].map((text, index) => (
-          <ListItem button key={text} onClick={()=>handleClick(index)}>
-            <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: <RecentActorsIcon /> }</ListItemIcon>
+        {['Filter ', 'Manage Skills', 'Manage Fields','View Users'].map((text, index) => (
+          <ListItem button key={index} onClick={()=>handleClick(index)}>
+            <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: index==2? <RecentActorsIcon /> :<GroupIcon /> }</ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}

@@ -20,6 +20,7 @@ import { useRouter } from 'next/router';
 import PersonIcon from '@material-ui/icons/Person'
 import BookIcon from '@material-ui/icons/Book';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import { useAuth } from '../lib/auth';
 
 const drawerWidth = 240;
 
@@ -58,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ResponsiveDrawer(props) {
   const { window } = props;
+  const { user, loading, signout } = useAuth();
   const classes = useStyles();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -92,7 +94,7 @@ function ResponsiveDrawer(props) {
       <Divider />
       <ListItem  button key={4} onClick={()=>handleClick(4)}>
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
-        <ListItemText primary={`Logout`} />
+        <ListItemText primary={`Logout`} onClick={()=>signout()} />
     </ListItem>
     </div>
   );

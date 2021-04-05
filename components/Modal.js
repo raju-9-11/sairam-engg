@@ -71,7 +71,7 @@ export default function ResponsiveDialog(props) {
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">{
-          "How skilled are you at "+ props.skill.toLowerCase() +" ?"}
+          "How skilled are you at "+ props.skill.name.toLowerCase() +" ?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -91,7 +91,7 @@ export default function ResponsiveDialog(props) {
             {value>=3 &&(
               <div className={classes.imageuploader}>
                   <ImageUploadCard />
-                <Typography  variant="h6" gutterBottom > you are requested to upload a certificate</Typography>
+                <Typography  variant="h6" gutterBottom > Upload a certificate</Typography>
             </div>)}
               </div>
           </DialogContentText>
