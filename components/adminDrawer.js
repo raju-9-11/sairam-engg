@@ -20,6 +20,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import BookIcon from '@material-ui/icons/Book';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import GroupIcon from '@material-ui/icons/Group';
+import { useAuth } from '../lib/auth'
 
 
 const drawerWidth = 240;
@@ -62,6 +63,7 @@ function AdminDrawer(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { user, loading , signout } = useAuth();
 
 
   const handleDrawerToggle = () => {
@@ -71,10 +73,19 @@ function AdminDrawer(props) {
   const router = useRouter();
 
   const handleClick = (index) => {
-      if(index==4){
-          router.push("/signin")
-      }else{
-          router.push(`/admin/${index+1}`)
+      if(index==0){
+          router.push("/admin")
+      }
+      if(index==1){
+        router.push(`/admin/skills`)
+
+      }
+      if(index==2){
+        router.push(`/admin/fields`)
+
+      }
+      if(index==3){
+          router.push(`/admin/users`)
       }
   }
 
@@ -93,7 +104,7 @@ function AdminDrawer(props) {
       <Divider />
       <ListItem  button key={4} onClick={()=>handleClick(4)}>
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
-        <ListItemText primary={`Logout`} />
+        <ListItemText primary={`Logout`} onClick={()=>signout()} />
     </ListItem>
     </div>
   );

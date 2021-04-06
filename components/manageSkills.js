@@ -11,6 +11,8 @@ import { Button } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import AddSkill from './addSkill';
 import firebase from '../lib/firebase'
+import { useSnackbar } from 'notistack'
+import AlertDialog from './confirmDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -65,19 +67,40 @@ export default function ManageSkills () {
     const classes = useStyles();
     const [ cards, setCards ] = useState([]);
     const firestore = firebase.firestore();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
       firestore
         .collection('skills')
-        .get()
-        .then((response) => {
-          var lst=[]
-          response.forEach((dat) => {
-            lst.push({id:dat.id, ...dat.data()})
-          })
+        .onSnapshot(snap => {
+          const lst = snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
           setCards(lst)
         })
+        // .get()
+        // .then((response) => {
+        //   var lst=[]
+        //   response.forEach((dat) => {
+        //     lst.push({id:dat.id, ...dat.data()})
+        //   })
+        //   setCards(lst)
+        // })
     },[])
+
+    const handleRemove = (id) => {
+      firestore
+        .collection('skills')
+        .doc(id)
+        .delete()
+        .then((response) => {
+          enqueueSnackbar("Skill deleted",{variant:'success'});
+        })
+        .catch((err) => {
+          enqueueSnackbar("An error occured",{variant:'error'})
+        })
+    }
 
 
     return (
@@ -90,7 +113,7 @@ export default function ManageSkills () {
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image={card.image}
+                      image={card.image || "https://lh3.googleusercontent.com/proxy/gbsxm616zZCzVqVwUoGGR2ik_j5M5JI2xkO3IW4Pz7yvp-XVimjKpedTNi6-7OpswCT5sibiF0w_iVOPepV6vSZk59HPU-SNki7PHW0oxDXba71qEJnk0-5Rq6OqutnaDQ"}
                       // "https://source.unsplash.com/random"
                       title={card.name}
                     />
@@ -103,7 +126,7 @@ export default function ManageSkills () {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button size="small">Remove Skill</Button>
+                      <Button size="small" onClick={()=> handleRemove(card.id)} >Remove Skill</Button>
                       <EditSkill card={card}/>
                     </CardActions>
                   </Card>

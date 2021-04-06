@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,7 +8,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
-import dynamic from 'next/dynamic'
+import { useSnackbar } from 'notistack';
+import { useRouter } from 'next/router'
+import firebase from '../lib/firebase'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -18,12 +20,18 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function AddField() {
-
+    
+    const { enqueueSnackbar } = useSnackbar()
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [ field, setField ] = React.useState('');
     const [ description, setDescription ] = React.useState('');
     const [ image, setImage ] = React.useState('')
+    const firestore = firebase.firestore();
+    const [ nameError , setNameError ] = useState('');
+    const [ descError, setDecsError ] = useState('');
+
+    const router = useRouter();
 
     const handleFieldChange = (val) => {
         setField(val);
@@ -38,12 +46,41 @@ export default function AddField() {
     }
 
     const handleClickOpen = () => {
-    setOpen(true);
+      setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleSave = () => {
+      setNameError(field.length<3?'Name should be atleast 3 characters long':'');
+      setDecsError(description.length<3?'Name should be atleast 3 characters long':'');
+      if(field.length<3 ||  description.length<3){
+        return;
+      }
+      firestore
+        .collection('fields')
+        .doc(field.split(" ").join("").toLowerCase())
+        .set( {
+          name: field,
+          description: description,
+          image: image
+        })
+        .then((response) =>{
+          enqueueSnackbar("Field added", { variant: 'success'})
+          // router.reload()
+          setDescription('');
+          setField('');
+          setImage('');
+          setOpen(false);
+        })
+        .catch((err) => {
+          console.log(err)
+          enqueueSnackbar("An error occured", { variant: 'error'})
+        })
+
+  };
 
   return (
     <div >
@@ -60,10 +97,13 @@ export default function AddField() {
             <Grid item xs={12} sm={6}>
             <TextField
                 autoFocus
+                required
                 variant="outlined"
                 margin="dense"
                 id="name"
                 value={field}
+                error={nameError!=''}
+                helperText={nameError}
                 onChange={(Event)=>handleFieldChange(Event.target.value)}
                 label="Skill Name"
                 type="name"
@@ -85,8 +125,11 @@ export default function AddField() {
             <Grid item xs={12} >
             <TextField
                 autoFocus
+                required
                 variant="outlined"
                 margin="dense"
+                error={descError!=''}
+                helperText={descError}
                 value={description}
                 onChange={(Event) => handleDescriptionChange(Event.target.value)}
                 id="description"
@@ -100,7 +143,7 @@ export default function AddField() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={()=>handleSave()} color="primary">
             Save
           </Button>
         </DialogActions>

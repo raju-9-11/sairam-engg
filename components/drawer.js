@@ -21,6 +21,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import BookIcon from '@material-ui/icons/Book';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { useAuth } from '../lib/auth';
+import Login from '../pages/signin';
 
 const drawerWidth = 240;
 
@@ -72,11 +73,18 @@ function ResponsiveDrawer(props) {
   const router = useRouter();
 
   const handleClick = (index) => {
-      if(index==4){
-          router.push("/signin")
-      }else{
-          router.push(`/dashboard/${index+1}`)
-      }
+    if(index===0){
+      router.push(`/dashboard/`, undefined , {shallow:true})
+      return ;
+    }
+    if(index===1){
+      router.push(`/dashboard/skills`, undefined , {shallow:true})
+      return;
+    }
+    if(index===2){
+      router.push(`/dashboard/fields`, undefined , {shallow:true})
+      return;
+    }
   }
 
   const drawer = (
@@ -85,14 +93,14 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {['Profile Update', 'Skill Set', 'Field of Expertise'].map((text, index) => (
-          <ListItem button key={text} onClick={()=>handleClick(index)}>
+          <ListItem button key={text}  onClick={()=>handleClick(index)}>
             <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: <RecentActorsIcon /> }</ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>
       <Divider />
-      <ListItem  button key={4} onClick={()=>handleClick(4)}>
+      <ListItem  button key={4} >
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
         <ListItemText primary={`Logout`} onClick={()=>signout()} />
     </ListItem>

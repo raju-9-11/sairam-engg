@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Copyright from './Copyright';
-import data from '../pages/api/mock.json';
 import FullScreenDialog from './Modal';
 import { useAuth } from '../lib/auth';
 import { useEffect, useState } from 'react';
@@ -76,8 +75,10 @@ export default function Skillset () {
         .then((response) => {
           var lst = []
           response.forEach((dat)=>{
-            console.log(dat.id)
-            lst.push(dat.data());
+            lst.push({
+              id:dat.id,
+              ...dat.data()
+            });
           })
           setCards(lst)
         })
@@ -129,14 +130,14 @@ export default function Skillset () {
                     />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        {card.skill}
+                        {card.name}
                       </Typography>
                       <Typography>
                         {card.description}
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <FullScreenDialog skill={card} />
+                      <FullScreenDialog skill={card} type={'skills'} />
                     </CardActions>
                   </Card>
                 </Grid>

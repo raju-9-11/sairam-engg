@@ -58,19 +58,19 @@ export default function AlignItemsList(props) {
                     
                       <ListItem alignItems="flex-start">
                         <ListItemAvatar>
-                        <Avatar alt={user.first_name} src="/static/images/avatar/1.jpg" />
+                        <Avatar alt={user.item.first_name} src="/static/images/avatar/1.jpg" />
                         </ListItemAvatar>
                         <ListItemText
                             className={classes.item}
-                            primary={user.first_name +" "+user.last_name}
+                            primary={user.item.first_name +" "+user.item.last_name}
                             secondary={
                             <React.Fragment>
-                            {user.cid}
+                            {user.item.cid}
                             </React.Fragment>
                         }
                         />
                         <Typography variant='inherit'>
-                            {user.foe || user.email}
+                            {user.item.foe || user.item.email}
                         </Typography>   
                     </ListItem>
                     </div>

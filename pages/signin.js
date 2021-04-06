@@ -15,13 +15,17 @@ import Copyright from '../components/Copyright'
 import Head from 'next/head';
 import { useAuth } from '../lib/auth'
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
+
+const num = Math.floor(Math.random()*17)+1
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100vh',
   },
   image: {
-    backgroundImage: 'url(https://source.unsplash.com/random)',
+    // backgroundImage: 'url(https://source.unsplash.com/random)',
+    backgroundImage: `url(https://edumate.sairam.edu.in/Wallpaper/${num}.jpg)`,
     backgroundRepeat: 'no-repeat',
     backgroundColor:
       theme.palette.mode === 'light'
@@ -45,25 +49,26 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const classes = useStyles();
 
-  const { user, loading, signinWithEmail } = useAuth();
+  const { user, loading, signinWithEmail ,resetPassword } = useAuth();
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const router = useRouter()
 
   // useEffect(()=> {
   //   if(user){
-  //     router.push('/dashboard/1')
+  //     router.push('/dashboard')
   //   }
   // },[user])
+
+  const onResetPassword = (e) => {
+    e.preventDefault();
+    resetPassword(email)
+  }
 
 
   const handleClick = (e) => {
     e.preventDefault();
-    try{ 
-      signinWithEmail(email,password,'/dashboard/1');
-    }
-    catch(e) {
-      enqueueSnackbar('Register error try again!',{variant:'error'});
-    }
+      signinWithEmail(email,password);
   }
 
   return (
@@ -141,7 +146,7 @@ export default function Login() {
             </Button>
             <Grid container className={classes.form}>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="#resetpassword" onClick={onResetPassword} variant="body2">
                   Forgot password?
                 </Link>
               </Grid>

@@ -6,8 +6,8 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import AlignItemsList from './listview';
-import data from '../pages/api/mock.json'
 import firebase from '../lib/firebase'
+import Fuse from 'fuse.js'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +39,17 @@ const useStyles = makeStyles((theme) => ({
 export default function ViewUsers(props) {
   const classes = useStyles();
   const [ users, setUsers ] = useState([]);
+  const [ filtered , setFiltered ] = useState([])
+  const [ search, setSearch ] = useState('')
   const firestore = firebase.firestore();
+  
+  useEffect(() => {
+    const fuse = new Fuse(users,{
+      keys: ['cid']
+    })
+    setFiltered(fuse.search(search))
+
+  },[search])
 
   
   useEffect(() =>{ 
@@ -64,8 +74,10 @@ export default function ViewUsers(props) {
         </IconButton> */}
         <InputBase
           className={classes.input}
-          placeholder="Search users by name"
-          inputProps={{ 'aria-label': 'search google maps' }}
+          placeholder="Search users by college id"
+          value={search}
+          onChange={(Event) => setSearch(Event.target.value)}
+          // inputProps={{ 'aria-label': 'search google maps' }}
         />
         <Divider className={classes.divider} orientation="vertical" />
         <IconButton type="submit" className={classes.iconButton} aria-label="search">
@@ -75,7 +87,7 @@ export default function ViewUsers(props) {
           <DirectionsIcon />
         </IconButton> */}
       </Paper>
-      <AlignItemsList users = {users} />
+     {filtered.length>0 && <AlignItemsList users = {filtered } />}
     </div>
   );
 }

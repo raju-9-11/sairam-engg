@@ -11,10 +11,11 @@ import Container from '@material-ui/core/Container';
 import Copyright from '../components/Copyright';
 import { makeStyles } from '@material-ui/core';
 import { useEffect, useState } from 'react';
-import { checkPassword , checkEmail, checkname, checkCid } from '../lib/func'
+import { checkPassword , checkEmail, checkname, checkCid, checkExp } from '../lib/func'
 import { useSnackbar } from 'notistack';
 import { useAuth } from '../lib/auth'
 import { useRouter } from 'next/router'
+import Dashboard from './dashboard'
 
 
 const useStyles = makeStyles({
@@ -35,13 +36,14 @@ const useStyles = makeStyles({
 
 export default function SignUp() {
 
-  const { user } = useAuth();
+  const { user , type } = useAuth();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [ years, setYears ] = useState(0);
   const [ firstName, setFirstName ] = useState('');
   const [ lastName, setLastName ] = useState('');
   const [ final, setFinal ] = useState('');
@@ -50,16 +52,18 @@ export default function SignUp() {
   const [ cidError, setCidError ]  = useState('');
   const [ firstNameError, setFirstNameError ] = useState('');
   const [ lastNameError, setLastNameError ] = useState('');
+  const [ expError, setExpError ] = useState('');
   const [ cid, setCid ] = useState('');
 
-  const { signupWithEmail } = useAuth();
+  const { signupWithEmail ,signout } = useAuth();
 
   useEffect(()=> {
     if(user){
-      router.push('/dashboard/1')
+      if(type===0){
+        return(<Dashboard/>)
+      }
     }
   },[user])
-
 
 
   const handleSignUp = (e) => {
@@ -69,14 +73,15 @@ export default function SignUp() {
       setFirstNameError(checkname(firstName));
       setLastNameError(checkname(lastName));
       setCidError(checkCid(cid));
-      if(emailError==='' && passwordError==='' && firstNameError==='' && lastNameError==='' && cidError===''){
+      setExpError(checkExp(years));
+      const val = emailError+passwordError+firstNameError+lastNameError+cidError+expError
+      if(val==''){
         try{
-          signupWithEmail(email, password, firstName, 0, lastName, cid);
+          signupWithEmail(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD, firstName, 0, lastName, cid , years);
         }
         catch(E){
           enqueueSnackbar('Register error try again!',{variant:'error'});
         }
-        return;
       }
     
   }
@@ -167,6 +172,22 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
+                  required
+                  fullWidth
+                  name="experience"
+                  label="Years of Experience"
+                  id="exp"
+                  error={expError!=''}
+                  helperText={expError}
+                  value={years}
+                  onChange={(Event) => setYears(Event.target.value)}
+                  type="number"
+                  autoComplete="exp"
+                  variant="outlined"
+              />
+              </Grid>
+            {/* <Grid item xs={12}>
+              <TextField
                 required
                 fullWidth
                 value={password}
@@ -194,7 +215,7 @@ export default function SignUp() {
                 id="cpassword"
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
             {/* <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
@@ -203,7 +224,7 @@ export default function SignUp() {
             </Grid> */}
           </Grid>
           <Button type="submit" onClick={handleSignUp} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
-            Sign Up
+            Create Account
           </Button>
           <Grid container justify="flex-end" className={classes.button}>
             <Grid item>

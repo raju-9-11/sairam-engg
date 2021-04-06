@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import firebase from '../lib/firebase'
-import data from '../pages/api/mock.json';
 import FullScreenDialog from './Modal';
 import { useState , useEffect } from 'react';
 
@@ -71,8 +70,10 @@ export default function Foe () {
         .then((response) => {
           var lst = []
           response.forEach((dat)=>{
-            // console.log(dat.data())
-            lst.push(dat.data());
+            lst.push({
+              id:dat.id,
+              ...dat.data()
+            });
           })
           setCards(lst)
         })
@@ -114,7 +115,7 @@ export default function Foe () {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <FullScreenDialog skill={card} />
+                      <FullScreenDialog skill={card} type={'fields'} />
                     </CardActions>
                   </Card>
                 </Grid>

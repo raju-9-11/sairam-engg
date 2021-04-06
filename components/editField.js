@@ -8,7 +8,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
-import dynamic from 'next/dynamic'
+import firebase from '../lib/firebase';
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -24,6 +26,8 @@ export default function EditField({ card }) {
     const [ field, setField ] = React.useState(card.name);
     const [ description, setDescription ] = React.useState(card.description);
     const [ image, setImage ] = React.useState(card.image)
+    const firestore = firebase.firestore();
+    const { enqueueSnackbar } = useSnackbar()
 
 
     const handleFieldChange = (val) => {
@@ -45,6 +49,27 @@ export default function EditField({ card }) {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleSave = () => {
+      firestore
+        .collection('fields')
+        .doc(card.id)
+        .set( {
+          name: field,
+          description: description,
+          image: image
+        })
+        .then((response) =>{
+          enqueueSnackbar("Edit successful", { variant: 'success'})
+          // router.reload()
+        })
+        .catch((err) => {
+          console.log(err)
+          enqueueSnackbar("An error occured", { variant: 'error'})
+        })
+
+      setOpen(false);
+  };
 
   return (
     <div >
@@ -101,7 +126,7 @@ export default function EditField({ card }) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleSave} color="primary">
             Save
           </Button>
         </DialogActions>

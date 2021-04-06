@@ -6,31 +6,40 @@ import ProTip from '../src/ProTip';
 import Link from '../src/Link';
 import Copyright from '../components/Copyright';
 import { useRouter } from 'next/router';
+import Login from './signin'
+import { useAuth } from '../lib/auth';
+import  Dashboard  from './dashboard'
 
 export default function Index() {
-  const router = useRouter();
-  useEffect(()=>{
-    if(true){
-      router.push('/signin');
-    }else{
-      router.push('/signup');
-    }
-  },[])
-  return (
-    <div></div>
+  // const router = useRouter();
+
+  // const { user } = useAuth();
+
+  // if(user){
+  //   return (
+  //     <Dashboard />
+  //   )
+  // }
+  return(
+    <Login />
   )
   // return (
-  //   <Container maxWidth="sm">
-  //     <Box my={4}>
-  //       <Typography variant="h4" component="h1" gutterBottom>
-  //         Next.js example
-  //       </Typography>
-  //       <Link href="/about" color="secondary">
-  //         Go to the about page
-  //       </Link>
-  //       <ProTip />
-  //       <Copyright />
-  //     </Box>
-  //   </Container>
-  // );
+  //   <Dashboard />
+  // )
+
+  
+  return (
+    <Container maxWidth="sm">
+      <Box my={4}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Page Loading
+        </Typography>
+        {/* <Link href="/about" color="secondary">
+          Go to the about page
+        </Link> */}
+        {/* <ProTip /> */}
+        {/* <Copyright /> */}
+      </Box>
+    </Container>
+  );
 }

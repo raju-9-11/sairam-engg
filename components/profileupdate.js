@@ -12,10 +12,12 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import PersonIcon from '@material-ui/icons/Person';
 import { useAuth } from '../lib/auth';
-import data from '../pages/api/mock.json';
 import firebase from '../lib/firebase';
 import { useSnackbar } from 'notistack'; 
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { Button } from '@material-ui/core';
+import { getFields } from '../lib/db'
+import { checkExp, checkname } from '../lib/func';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -34,10 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     height: '100%',
-    marginLeft:'2vh',
     marginLeft:'4vh',
-
-    
   },
   control: {
     padding: theme.spacing(2),
@@ -55,8 +54,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const fields = data.Fields;
-
 
 export default function Profileupdate () {
   const classes = useStyles();
@@ -67,13 +64,45 @@ export default function Profileupdate () {
   const [ firstName , setFirstName ] = useState('');
   const [ lastName , setLastName ] = useState('');
   const [ cid, setCid ] = useState('');
-  const [ password, setPassword ] = useState('');
-  const [ final, setFinal ] = useState('');
   const [ email, setEmail] = useState('');
-  const [ foe, setFoe ] = useState('---Select---');
   const [ years, setYears ] = useState(0);
   const { user } = useAuth();
   const firestore = firebase.firestore();
+  const [ expError, setExpError ] = useState('');
+  const [ fnameError, setFnameError ] = useState('');
+  const [ lnameError, setLnameError ] = useState('');
+  // const [ password, setPassword ] = useState('');
+  // const [ final, setFinal ] = useState('');
+  // const [ foe, setFoe ] = useState('---Select---');
+  
+  const handleUpdate = () => {
+    setFnameError(checkname(firstName));
+    setLnameError(checkname(lastName));
+    setExpError(checkExp(years));
+    console.log(years)
+    if(fnameError==='' && lnameError ==='' && expError===''){
+      firestore
+        .collection('users')
+        .doc(user.uid) 
+        .set({
+          name:firstName,
+          firstName: firstName,
+          lastName:lastName,
+          experience: years
+        },{merge:true})
+        .then((response) => {
+          enqueueSnackbar('User details succesfully updated',{ variant : 'success'})
+        })
+        .catch((err) => {
+          enqueueSnackbar('Error occured while updating')
+        })
+    }
+    var fireUser = firebase.auth().currentUser;
+    fireUser.updateProfile({
+      displayName:firstName,
+    })
+
+  }
 
   useEffect(() => {
     if(user){
@@ -81,14 +110,13 @@ export default function Profileupdate () {
         firestore
           .collection('users')
           .doc(user.uid)
-          .get()
-          .then((doc)=>{
+          .onSnapshot((doc) => {
             setEmail(doc.data().email);
-            setFirstName(doc.data().first_name);
-            setLastName(doc.data().last_name);
-            setCid(doc.data().cid);
-            setYears(doc.data().years || 0);
-            setLoading(false)
+              setFirstName(doc.data().first_name);
+              setLastName(doc.data().last_name);
+              setCid(doc.data().cid);
+              setYears(doc.data().years || 0);
+              setLoading(false)
           })
       }
       catch(e){
@@ -101,11 +129,6 @@ export default function Profileupdate () {
     }
   },[user])
 
-
-
-  const handleSave = (event) => {
-    setSpacing(Number(event.target.value));
-  };
 
   return (
       <div >
@@ -146,6 +169,8 @@ export default function Profileupdate () {
                                 id="firstName"
                                 label="First Name"
                                 value={firstName}
+                                error={fnameError!=''}
+                                helperText={fnameError}
                                 onChange={(Event)=> setFirstName(Event.target.value)}
                                 autoFocus
                                 variant="outlined"
@@ -158,6 +183,8 @@ export default function Profileupdate () {
                                 id="lastName"
                                 label="Last Name"
                                 value={lastName}
+                                error={lnameError!=''}
+                                helperText={lnameError}
                                 onChange={(Event)=> setLastName(Event.target.value)}
                                 name="lastName"
                                 autoComplete="lname"
@@ -170,6 +197,7 @@ export default function Profileupdate () {
                                 fullWidth
                                 id="email"
                                 label="Email Address"
+                                disabled
                                 name="email"
                                 value={email}
                                 onChange={(Event)=>setEmail(Event.target.value)}
@@ -177,7 +205,7 @@ export default function Profileupdate () {
                                 variant="outlined"
                             />
                             </Grid>
-                            <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                             <TextField
                                 required
                                 fullWidth
@@ -202,7 +230,7 @@ export default function Profileupdate () {
                                 id="npassword"
                                 variant="outlined"
                             />
-                            </Grid>
+                            </Grid> */}
                             {/* <Grid item xs={12}>
                             <FormControlLabel
                                 control={<Checkbox value="allowExtraEmails" color="primary" />}
@@ -247,7 +275,7 @@ export default function Profileupdate () {
                                   variant="outlined"
                               />
                               </Grid>
-                              <Grid item xs={12}>
+                              {/* <Grid item xs={12}>
                             <TextField
                               select
                               fullWidth
@@ -266,7 +294,7 @@ export default function Profileupdate () {
                                 </MenuItem>
                               ))}
                             </TextField>
-                          </Grid>
+                          </Grid> */}
                               <Grid item xs={12}>
                               <TextField
                                   required
@@ -274,6 +302,8 @@ export default function Profileupdate () {
                                   name="experience"
                                   label="Years of Experience"
                                   id="exp"
+                                  error={expError!=''}
+                                  helperText={expError}
                                   value={years}
                                   onChange={(Event) => setYears(Event.target.value)}
                                   type="number"
@@ -289,6 +319,16 @@ export default function Profileupdate () {
                               </Grid> */}
                           </Grid>
                           </Box>
+                          <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            className={classes.button}
+                            onClick={handleUpdate}
+                          >
+                            Update Details
+                          </Button>
                       </Box>
                       </Container>)}
                   </Paper>

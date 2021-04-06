@@ -9,6 +9,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
 import dynamic from 'next/dynamic'
+import firebase from '../lib/firebase'
+import { useSnackbar } from 'notistack';
+import { useRouter } from 'next/router';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -19,15 +22,19 @@ const useStyles = makeStyles((theme) => ({
 
 function EditSkill({ card }) {
 
+
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [ skill, setSkill ] = React.useState(card.name);
     const [ description, setDescription ] = React.useState(card.description);
     const [ image, setImage ] = React.useState(card.image)
+    const firestore = firebase.firestore()
+    const { enqueueSnackbar } = useSnackbar();
+    const router = useRouter();
 
 
     const handleSkillChange = (val) => {
-        setField(val);
+        setSkill(val);
     }
     
     const handleDescriptionChange = (val) => {
@@ -40,12 +47,34 @@ function EditSkill({ card }) {
 
 
     const handleClickOpen = () => {
-    setOpen(true);
+        setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
     };
+
+
+    const handleSave = () => {
+      firestore
+        .collection('skills')
+        .doc(card.id)
+        .set( {
+          name: skill,
+          description: description,
+          image: image
+        })
+        .then((response) =>{
+          enqueueSnackbar("Edit successful", { variant: 'success'})
+          // router.reload()
+        })
+        .catch((err) => {
+          console.log(err)
+          enqueueSnackbar("An error occured", { variant: 'error'})
+        })
+
+      setOpen(false);
+  };
 
   return (
     <div >
@@ -102,7 +131,7 @@ function EditSkill({ card }) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} onClick={handleSave} color="primary">
             Save
           </Button>
         </DialogActions>

@@ -6,13 +6,13 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import data from '../pages/api/mock.json';
 import FullScreenDialog from './Modal';
 import { Button } from '@material-ui/core';
 import AddField from './addField';
 import EditField from './editField';
 import firebase from '../lib/firebase'
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -68,19 +68,40 @@ export default function ManageFields () {
     const classes = useStyles();
     const firestore = firebase.firestore();
     const [ cards, setCards ] = useState([]);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
       firestore
         .collection('fields')
-        .get()
-        .then((response) => {
-          var lst=[]
-          response.forEach((dat) => {
-            lst.push({id:dat.id, ...dat.data()})
-          })
+        .onSnapshot(snap => {
+          const lst = snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
           setCards(lst)
         })
+        // .get()
+        // .then((response) => {
+        //   var lst=[]
+        //   response.forEach((dat) => {
+        //     lst.push({id:dat.id, ...dat.data()})
+        //   })
+        //   setCards(lst)
+        // })
     },[])
+
+    const handleRemove = (id) => {
+      firestore
+        .collection('fields')
+        .doc(id)
+        .delete()
+        .then((response) => {
+          enqueueSnackbar("Field deleted",{variant:'success'});
+        })
+        .catch((err) => {
+          enqueueSnackbar("An error occured",{variant:'error'})
+        })
+    }
 
     return (
         <div>
@@ -105,7 +126,7 @@ export default function ManageFields () {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small">Remove Field</Button>
+                        <Button size="small" onClick={()=>handleRemove(card.id)} >Remove Field</Button>
                         <EditField card={card}/>
                     </CardActions>
                   </Card>

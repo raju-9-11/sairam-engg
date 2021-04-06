@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -11,6 +11,9 @@ import ImageUploadCard from './ImageUpload';
 import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Typography } from '@material-ui/core';
+import firebase from '../lib/firebase'
+import { useSnackbar } from 'notistack'
+import { useAuth } from '../lib/auth';
 
 
 const labels = {
@@ -43,13 +46,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function ResponsiveDialog(props) {
-  const [value, setValue] = React.useState(2);
+export default function ResponsiveDialog({skill}) {
+  const [value, setValue] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
+  const skillid = skill.id
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  const firestore = firebase.firestore();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const classes = useStyles();
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -58,6 +66,38 @@ export default function ResponsiveDialog(props) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleSave = () => {
+    firestore
+      .collection('users')
+      .doc(user.uid)
+      .set({
+        [skillid]:{
+          points: value,
+          url:''
+        }
+      },{merge:true})
+      .then((response) => {
+        enqueueSnackbar('Skill points updated',{variant:'success'})
+        setOpen(false)
+      })
+      .catch((err)=>{ 
+        enqueueSnackbar('Error contacting server',{variant:'error'})
+      })
+  }
+
+  useEffect(()=>{
+    firestore
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((snap) => {
+        if(snap.data()[skillid]){
+          setValue(snap.data()[skillid].points)
+        }
+      })
+  
+  },[])
+  
 
   return (
     <div>
@@ -71,7 +111,7 @@ export default function ResponsiveDialog(props) {
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">{
-          "How skilled are you at "+ props.skill.name.toLowerCase() +" ?"}
+          "How skilled are you at "+ skill.name.toLowerCase() +" ?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -97,10 +137,10 @@ export default function ResponsiveDialog(props) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          {/* <Button autoFocus onClick={handleClose} color="primary">
-            Disagree
-          </Button> */}
-          <Button onClick={handleClose} color="primary" autoFocus>
+          <Button autoFocus onClick={handleClose} color="primary">
+            cancel
+          </Button>
+          <Button onClick={handleSave} color="primary" autoFocus>
             Save Changes
           </Button>
         </DialogActions>
