@@ -5,27 +5,67 @@ import Box from '@material-ui/core/Box';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
 import Copyright from '../components/Copyright';
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import Login from './signin'
-import { useAuth } from '../lib/auth';
-import  Dashboard  from './dashboard'
+import firebase from '../lib/firebase'
 
 export default function Index() {
-  // const router = useRouter();
 
-  // const { user } = useAuth();
+  const router = useRouter()
 
-  // if(user){
-  //   return (
-  //     <Dashboard />
-  //   )
-  // }
+  const [ type, setType ] = React.useState(null);
+  
+  useEffect(()=>{
+
+  firebase.auth().onAuthStateChanged(function(user) {
+
+    if (user) {
+      firebase.firestore()
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((doc)=>{
+          setType(doc.data().type)
+          
+        })
+    } else {
+      setType(null)
+    }
+  });
+  if(type==0){
+    router.push('/dashboard')
+  }
+  else if(type==1){
+    router.push('/admin')
+  }
+  else {
+    router.push('/signin')
+  }
+  },[type])
+
+
+
+  // const redirect = React.useCallback((path) => {
+  //   router.replace(path)
+  // })
+
+  //   if(type===null){
+  //     redirect('/signin')
+  //   }
+  //   if(type===0){
+  //     router.push('/dashboard');
+  //   }
+  //   if(type==1){
+  //     redirect('/admin')
+  //   }
+
+
+
+
   return(
     <Login />
   )
-  // return (
-  //   <Dashboard />
-  // )
+
 
   
   return (

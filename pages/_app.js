@@ -48,6 +48,9 @@ export default function MyApp(props) {
   if (router.pathname.startsWith("/dashboard") && type !== 0) {
     allowed = false;
   }
+  if (router.pathname.startsWith("/signin") && type !== null) {
+    allowed = false
+  }
   const ComponentToRender = allowed ? Component : Home; 
 
   return (

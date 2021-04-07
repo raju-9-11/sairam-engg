@@ -50,14 +50,19 @@ export default function ResponsiveDialog({skill}) {
   const [value, setValue] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
   const [open, setOpen] = React.useState(false);
-  const theme = useTheme();
-  const skillid = skill.id
+  const [ image, setImage ] = React.useState(null);
+  const [ imageUrl, setImageUrl ] = React.useState('');
   const { user } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
-  const firestore = firebase.firestore();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const classes = useStyles();
-
+  const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  
+  const firestore = firebase.firestore();
+  const skillid = skill.id
+  const storage = firebase.storage();
+  const storageRef = storage.ref();
+  var imagesRef = storageRef.child(`${skill.id}/${user.uid}.jpg`);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -68,6 +73,25 @@ export default function ResponsiveDialog({skill}) {
   };
 
   const handleSave = () => {
+    if(value>3 && image==null){
+      enqueueSnackbar('Upload a certificate to continue',{variant:'error'})
+      return;
+    }
+    var pattern = /image-*/;
+
+    if (value>3 && !image.type.match(pattern)) {
+      enqueueSnackbar('Invalid file format',{variant:'error'});
+      return;
+    }
+    
+    imagesRef 
+      .put(image)
+      .then((response) => {
+        enqueueSnackbar('Certificate Upload Successfull',{variant:'success'})
+      })
+      .catch((err) => {
+        enqueueSnackbar('Certificate Upload failed',{variant:'error'})
+      })
     firestore
       .collection('users')
       .doc(user.uid)
@@ -87,6 +111,16 @@ export default function ResponsiveDialog({skill}) {
   }
 
   useEffect(()=>{
+
+    imagesRef
+      .getDownloadURL()
+      .then((url) => {
+        setImageUrl(url)
+      })
+      .catch((err) => {
+        //
+      })
+    
     firestore
       .collection('users')
       .doc(user.uid)
@@ -97,7 +131,6 @@ export default function ResponsiveDialog({skill}) {
       })
   
   },[])
-  
 
   return (
     <div>
@@ -122,16 +155,33 @@ export default function ResponsiveDialog({skill}) {
                 precision={0.5}
                 onChange={(event, newValue) => {
                   setValue(newValue);
+                  if(newValue<4){
+                    setImage(null)
+                  }
                 }}
                 onChangeActive={(event, newHover) => {
                   setHover(newHover);
                 }}
               />
               {value !== null && <Box ml={2}>{labels[hover !== -1 ? hover : value]}</Box>}
+              {image!==null && <img src={URL.createObjectURL(image)} width={'100%'} />}
+              {imageUrl!=='' && image===null && <img src={imageUrl} width={'100%'}/>}
             {value>=3 &&(
               <div className={classes.imageuploader}>
-                  <ImageUploadCard />
-                <Typography  variant="h6" gutterBottom > Upload a certificate</Typography>
+                <Button
+                    variant="contained"
+                    component="label"
+                  >
+                    {image==null && imageUrl===''? 'Upload certificate' : 'Change File' }
+                    <input
+                      accept='image/*'
+                      type="file"
+                      hidden
+                      onChange={(Event)=>setImage(Event.target.files[0])}
+                    />
+                  </Button>
+                  {/* <ImageUploadCard />
+                <Typography  variant="h6" gutterBottom > Upload a certificate</Typography> */}
             </div>)}
               </div>
           </DialogContentText>
