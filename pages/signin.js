@@ -16,6 +16,7 @@ import Head from 'next/head';
 import { useAuth } from '../lib/auth'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import FormDialog from '../components/registerModal'
 
 
 const num = Math.floor(Math.random()*17)+1
@@ -146,14 +147,15 @@ export default function Login() {
             </Button>
             <Grid container className={classes.form}>
               <Grid item xs>
-                <Link href="#resetpassword" onClick={onResetPassword} variant="body2">
+              <Button size="small" color="primary" onClick={onResetPassword}>
                   Forgot password?
-                </Link>
+                </Button>
               </Grid>
               <Grid item>
-                <Link href="/signup" variant="body2">
+                <FormDialog />
+                {/* <Link href="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
-                </Link>
+                </Link> */}
               </Grid>
             </Grid>
             <Copyright sx={{ mt: 5 }} />

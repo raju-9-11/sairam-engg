@@ -1,7 +1,16 @@
 {
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
+  "/admin/fields": "pages/admin/fields.html",
+  "/admin": "pages/admin.html",
+  "/admin/skills": "pages/admin/skills.html",
+  "/admin/users": "pages/admin/users.html",
+  "/api/user": "pages/api/user.js",
+  "/dashboard/fields": "pages/dashboard/fields.html",
+  "/dashboard": "pages/dashboard.html",
+  "/dashboard/skills": "pages/dashboard/skills.html",
+  "/": "pages/index.html",
+  "/signin": "pages/signin.html",
   "/_error": "pages/_error.js",
-  "/dashboard": "pages/dashboard.js",
-  "/dashboard/fields": "pages/dashboard/fields.js"
+  "/404": "pages/404.html"
 }

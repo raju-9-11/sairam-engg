@@ -26,23 +26,19 @@ export default function Index() {
         .get()
         .then((doc)=>{
           setType(doc.data().type)
-          
+          if(doc.data().type==0){
+            router.push('/dashboard')
+          }
+          if(doc.data().type==1){
+            router.push('/admin')
+          }
         })
     } else {
       setType(null)
+      router.push('/admin')
     }
   });
-  if(type==0){
-    router.push('/dashboard')
-  }
-  else if(type==1){
-    router.push('/admin')
-  }
-  else {
-    router.push('/signin')
-  }
-  },[type])
-
+  },[])
 
 
   // const redirect = React.useCallback((path) => {
