@@ -1,114 +1,202 @@
-import AdminLayout from '../../components/adminLayout';
-import { makeStyles } from '@material-ui/core/styles';
-import Filter from '../../components/filter';
+import React from 'react';
+import ManageSkills from '../../components/AdminComponents/manageSkills';
+import ManageFields from '../../components/AdminComponents/manageFields';
+import AppBar from '@material-ui/core/AppBar';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import MenuIcon from '@material-ui/icons/Menu';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useRouter } from 'next/router';
-import ManageSkills from '../../components/manageSkills';
-import ManageFields from '../../components/manageFields';
-import ViewUsers from '../../components/viewUsers';
-import { CssBaseline, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import firebase from '../../lib/firebase'
-import { useAuth } from '../../lib/auth';
+import PersonIcon from '@material-ui/icons/Person'
+import BookIcon from '@material-ui/icons/Book';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import GroupIcon from '@material-ui/icons/Group';
+import { useAuth } from '../../lib/auth'
+import Filter from '../../components/AdminComponents/filter';
+import ViewUsers from '../../components/AdminComponents/viewUsers';
+import Copyright from '../../components/Copyright';
+import SimpleBackdrop from '../../components/backDrop';
+import Custom from '../../components/custom404'
+
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-      width: '100%',
-      display:'flex',
-      float:'right',
-      backgroundColor: theme.palette.background.paper,
+  root: { 
+    display: 'flex',
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft:'10vh'
     },
-    list: {
-      marginTop:'8vh',
-      width: '87.5%',
-      [theme.breakpoints.up('sm')]: {
-        marginLeft:theme.spacing(30)
-      },
+    flexDirection:'column',
+    alignItems:'center'
+  },
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
     },
-    filter : {
-      [theme.breakpoints.up('sm')]: {
-        marginLeft:theme.spacing(30)
-      },
+  },
+  appBar: {
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
     },
-    inline: {
-      display: 'inline',
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
     },
-    log: {
-      display:'flex',
-      flexDirection:'column',
-      float:'right'
-    },
-    toolbar: {
-      width:'100%'
-    },
-    icon: {
-      marginRight: theme.spacing(2),
-    },
-    heroContent: {
-      backgroundColor: theme.palette.background.paper,
-      padding: theme.spacing(8, 0, 6),
-    },
-    heroButtons: {
-      marginTop: theme.spacing(4),
-    },
-    cardGrid: {
-      paddingTop: theme.spacing(8),
-      paddingBottom: theme.spacing(8),
-    },
-    card: {
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    cardMedia: {
-      paddingTop: '56.25%', // 16:9
-    },
-    cardContent: {
-      flexGrow: 1,
-    },
-    footer: {
-      backgroundColor: theme.palette.background.paper,
-      padding: theme.spacing(6),
-    },
-  }));
-export default function Admin () {
-    const classes = useStyles();
+  },
+  // necessary for content to be below app bar
+  toolbar: theme.mixins.toolbar,
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  footer: {
+    width:'100%',
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(6),
+  },
+}));
 
-    const { user, type } = useAuth();
-    const [users, setUsers ] = useState([]);
-    const router = useRouter();
-    const { id } = router.query;
-    const firestore = firebase.firestore();
-    if(id<1 || id>4){
-      router.push('/admin/1');
+function Admin(props) {
+  const { window } = props;
+  const classes = useStyles();
+  const theme = useTheme();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { user, loading , signout } = useAuth();
+  const [ tab , setTab ] = React.useState(0)
+
+
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const router = useRouter();
+
+  const handleClick = (index) => {
+    if(index===0){
+      setTab(0);
     }
-    
-    useEffect(() =>{ 
-      firestore
-        .collection('users')
-        .get()
-        .then((response) => {
-          var lst =[]
-          response.forEach((user) =>{
-            lst.push(user.data());
-          })
-          setUsers(lst)
-        })
-    },[])
+    if(index===1){
+      setTab(1);
+    }
+    if(index===2){
+      setTab(2);
+    }
+    if(index===3){
+      setTab(3);
+    }
+    setMobileOpen(false);
+  }
+
+  const drawer = (
+    <div>
+      <div className={classes.toolbar} />
+      <Divider />
+      <List>
+        {['Filter ', 'Manage Skills', 'Manage Fields','View Users'].map((text, index) => (
+          <ListItem button key={index} onClick={()=>handleClick(index)}>
+            <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: index==2? <RecentActorsIcon /> :<GroupIcon /> }</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <ListItem  button key={4} onClick={()=>handleClick(4)}>
+        <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
+        <ListItemText primary={`Logout`} onClick={()=>signout()} />
+    </ListItem>
+    </div>
+  );
+
+  const container = window !== undefined ? () => window().document.body : undefined;
 
 
-
-
-    return (
-        <React.Fragment>
-            <AdminLayout name="Filter" AppBar/>
-            <CssBaseline />
-            <footer>
-            {/* <Typography variant="h6" align="center" gutterBottom> */}
-              <div className={classes.filter}>
-                <Filter />
-              </div>
-                {/* </Typography> */}
-              </footer>
-        </React.Fragment>
-    )
+  return (
+    <>
+     {loading && <SimpleBackdrop/>}
+        {user && user.type==1 && 
+        <div className={classes.root}>
+        <AppBar position="fixed" className={classes.appBar}>
+            <Toolbar>
+            <IconButton
+                color="secondary"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                className={classes.menuButton}
+            >
+                <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+                {props.name}
+            </Typography>
+            </Toolbar>
+        </AppBar>
+        <nav className={classes.drawer} aria-label="mailbox folders">
+            {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+            <Hidden smUp implementation="css">
+            <Drawer
+                container={container}
+                variant="temporary"
+                anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                classes={{
+                paper: classes.drawerPaper,
+                }}
+                ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+                }}
+            >
+                {drawer}
+            </Drawer>
+            </Hidden>
+            <Hidden xsDown implementation="css">
+            <Drawer
+                classes={{
+                paper: classes.drawerPaper,
+                }}
+                variant="permanent"
+                open
+            >
+                {drawer}
+            </Drawer>
+            </Hidden>
+        </nav>
+        <footer className={classes.footer} >
+        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : <ViewUsers/>}
+        <Typography
+            variant="subtitle1"
+            align="center"
+            color="textSecondary"
+            component="p"
+          >
+            This Website was developed by
+          </Typography>
+          <Copyright />
+        </footer>
+        </div>}
+        {(!user && !loading)||(user && user.type==0) && <Custom />}
+        </>
+  );
 }
+
+
+export default Admin;

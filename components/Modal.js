@@ -7,7 +7,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import ImageUploadCard from './ImageUpload';
 import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Typography } from '@material-ui/core';

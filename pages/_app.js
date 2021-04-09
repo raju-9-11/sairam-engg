@@ -9,28 +9,12 @@ import firebase from '../lib/firebase'
 import { AuthProvider } from '../lib/auth'
 import { SnackbarProvider } from 'notistack';
 import { useRouter } from 'next/router';
+import Dashboard from './dashboard';
+import Admin from './admin';
 
 
 export default function MyApp(props) {
   const { Component, pageProps } = props;
-
-  const [ type, setType ] = React.useState(null);
-  firebase.auth().onAuthStateChanged(function(user) {
-
-    if (user) {
-      firebase.firestore()
-        .collection('users')
-        .doc(user.uid)
-        .get()
-        .then((doc)=>{
-          setType(doc.data().type)
-        })
-    } else {
-      setType(null)
-    }
-    // console.log(type)
-
-  });
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -40,18 +24,6 @@ export default function MyApp(props) {
     }
   }, []);
 
-  let allowed = true;
-  const router = useRouter();
-  if (router.pathname.startsWith("/admin") && type !== 1) {
-    allowed = false;
-  }
-  if (router.pathname.startsWith("/dashboard") && type !== 0) {
-    allowed = false;
-  }
-  if (router.pathname.startsWith("/signin") && type !== null) {
-    allowed = false
-  }
-  const ComponentToRender = allowed ? Component : Home; 
 
   return (
     <React.Fragment>
@@ -64,7 +36,7 @@ export default function MyApp(props) {
         <CssBaseline />
         <SnackbarProvider maxSnack={2}>
         <AuthProvider >
-          <ComponentToRender {...pageProps} />
+          <Component {...pageProps} />
         </AuthProvider>
         </SnackbarProvider>
       </ThemeProvider>

@@ -1,49 +1,70 @@
-import * as React from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import ProfileUpdate from '../../components/userComponents/profileupdate'
+import List from '@material-ui/core/List';
+import Skillset from '../../components/userComponents/skillset';
+import Foe from '../../components/userComponents/foe';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import MenuIcon from '@material-ui/icons/Menu';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Copyright from '../../components/Copyright';
-import Layout from '../../components/layout';
-import Skillset from '../../components/skillset';
-import Profileupdate from '../../components/profileupdate';
-import Foe from '../../components/foe';
-import { useRouter } from 'next/router'
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useRouter } from 'next/router';
+import PersonIcon from '@material-ui/icons/Person'
+import BookIcon from '@material-ui/icons/Book';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { useAuth } from '../../lib/auth';
-import firebase from '../../lib/firebase'
+import Copyright from '../../components/Copyright';
+import SimpleBackdrop from '../../components/backDrop';
+import Custom from '../../components/custom404'
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
-  log: {
-    display:'flex',
-    flexDirection:'column',
-    float:'right'
-  },
-  toolbar: {
-    width:'100%'
-  },
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
-  card: {
-    height: '100%',
+  root: {
     display: 'flex',
-    flexDirection: 'column',
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft:'10vh'
+    },
+    flexDirection:'column',
+    alignItems:'center'
   },
-  cardMedia: {
-    paddingTop: '56.25%', // 16:9
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
   },
-  cardContent: {
+  appBar: {
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
+  // necessary for content to be below app bar
+  toolbar: theme.mixins.toolbar,
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  content: {
     flexGrow: 1,
+    padding: theme.spacing(3),
   },
   footer: {
     backgroundColor: theme.palette.background.paper,
@@ -52,22 +73,113 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Dashboard() {
+function Dashboard(props) {
+  const { window } = props;
+  const { user, loading, signout } = useAuth();
   const classes = useStyles();
+  const theme = useTheme();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [ tab, setTab ] = React.useState(0)
+
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
   const router = useRouter();
-  const { user } = useAuth();
+
+  const handleClick = (index) => {
+    if(index===0){
+      setTab(0);
+    }
+    if(index===1){
+      setTab(1);
+    }
+    if(index===2){
+      setTab(2);
+    }
+    setMobileOpen(false);
+  }
+ 
+  const drawer = (
+    <div>
+      <div className={classes.toolbar} />
+      <Divider />
+      <List>
+        {['Profile Update', 'Skill Set', 'Field of Expertise'].map((text, index) => (
+          <ListItem button key={text}  onClick={()=>handleClick(index)}>
+            <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: <RecentActorsIcon /> }</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <ListItem  button key={4} >
+        <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
+        <ListItemText primary={`Logout`} onClick={()=>signout()} />
+    </ListItem>
+    </div>
+  );
+
+  const container = window !== undefined ? () => window().document.body : undefined;
 
 
   return (
-    <React.Fragment>
-        <Layout name="Profile"  AppBar />
+    <>
+    {loading && <SimpleBackdrop/>}
+    {user && user.type==0 &&
+     <div className={classes.root}>
         <CssBaseline />
-        {/* Footer */}
-        <footer className={classes.footer}>
-          <Typography variant="h6" align="center" gutterBottom>
-            <Profileupdate/>
-          </Typography>
-          <Typography
+        <AppBar position="fixed" className={classes.appBar}>
+            <Toolbar>
+            <IconButton
+                color="secondary"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                className={classes.menuButton}
+            >
+                <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+                {props.name}
+            </Typography>
+            </Toolbar>
+        </AppBar>
+        <nav className={classes.drawer} aria-label="mailbox folders">
+            {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+            <Hidden smUp implementation="css">
+            <Drawer
+                container={container}
+                variant="temporary"
+                anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                classes={{
+                paper: classes.drawerPaper,
+                }}
+                ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+                }}
+            >
+                {drawer}
+            </Drawer>
+            </Hidden>
+            <Hidden xsDown implementation="css">
+            <Drawer
+                classes={{
+                paper: classes.drawerPaper,
+                }}
+                variant="permanent"
+                open
+            >
+                {drawer}
+            </Drawer>
+            </Hidden>
+        </nav>
+        <footer className={classes.footer} >
+        {tab===0? <ProfileUpdate /> : tab===1? <Skillset /> : <Foe/>}
+        <Typography
             variant="subtitle1"
             align="center"
             color="textSecondary"
@@ -77,7 +189,11 @@ export default function Dashboard() {
           </Typography>
           <Copyright />
         </footer>
-        {/* End footer */}
-      </React.Fragment>
+        </div>}
+        {(!user && !loading)||(user && user.type==1) && <Custom />}
+        </>
   );
 }
+
+
+export default Dashboard;
