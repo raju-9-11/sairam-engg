@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display:'flex',
     flexDirection:'column',
-    [theme.breakpoints.up('xs')]: {
+    [theme.breakpoints.up('sm')]: {
       display:'flex',
       marginLeft:'9vh'
     },
@@ -38,6 +38,11 @@ const useStyles = makeStyles((theme) => ({
     height: 28,
     margin: 4,
   },
+  current: {
+    [theme.breakpoints.up('sm')]: {
+      marginLeft:theme.spacing(20)
+    },
+  }
 }));
 
 export default function ViewUsers(props) {
@@ -78,7 +83,8 @@ export default function ViewUsers(props) {
 
 
   return (
-    <div className={classes.root}>
+    <>
+    <div className={classes.current}>
       <Paper component="form" className={classes.pap}>
         {/* <IconButton className={classes.iconButton} aria-label="menu">
           <MenuIcon />
@@ -99,7 +105,8 @@ export default function ViewUsers(props) {
         </IconButton> */}
       </Paper>
      {filtered.length>0 && <AlignItemsList users = {filtered } />}
-     {search=='' && <AlignItemsList users = {temp } />}
+     {search=='' && users.length>0 && <AlignItemsList users = {temp } />}
     </div>
+    </>
   );
 }

@@ -65,11 +65,11 @@ function Home() {
 
   useEffect(()=>{
     if(user){
-      if(user.type===0){
-        router.push('/dashboard')
+      if(user.type===1){
+        router.push('/admin')
       }
       else{
-        router.push('/admin')
+        router.push('/dashboard')
       }
     }
   },[user,loading])

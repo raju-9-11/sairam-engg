@@ -1,0 +1,78 @@
+{
+    "assignedWork":[
+        {
+            "name":"Firestore and fireauth", 
+            "description": "Complete Firebase Implementation",
+            "completed":true,
+            "user":{
+                "uid":"1048",
+                "first_name":"John",
+                "last_name":"Doe",
+                "years":"10",
+                "email":"johndoe@gmail.com"
+            }
+        },
+        {
+            "name":"Routing and navigation", 
+            "description":"Fix routing and navigation issues",
+            "completed":false,
+            "user":{
+                "uid":"1049",
+                "first_name":"Jane",
+                "last_name":"Doe",
+                "years":"17",
+                "email":"janedoe@gmail.com"
+            }
+        },
+        {
+            "name":"Hosting",
+            "description":"Host the Final Application",
+            "completed":true,
+            "user":{
+                "uid":"1050",
+                "first_name":"James",
+                "last_name":"D",
+                "years":"10",
+                "email":"james@gmail.com"
+            }
+        }
+    ],
+    "myWork": [
+        {
+            "name":"Firestore and fireauth", 
+            "description": "Complete Firebase Implementation",
+            "completed":true,
+            "admin":{
+                "uid":"1050",
+                "first_name":"James",
+                "last_name":"D",
+                "years":"10",
+                "email":"james@admin.com"
+            }
+        },
+        {
+            "name":"Routing and novigation", 
+            "description":"Fix routing and navigation issues",
+            "completed":true,
+            "admin":{
+                "uid":"1049",
+                "first_name":"Jane",
+                "last_name":"Doe",
+                "years":"17",
+                "email":"janedoe@admin.com"
+            }
+        },
+        {
+            "name":"Hosting",
+            "description":"Host the Final Application",
+            "completed":false,
+            "admin":{
+                "uid":"1048",
+                "first_name":"John",
+                "last_name":"Doe",
+                "years":"10",
+                "email":"johndoe@admin.com"
+            }
+        }
+    ]
+}

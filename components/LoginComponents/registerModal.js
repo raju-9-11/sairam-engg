@@ -10,9 +10,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Register from './register'
+import { useMediaQuery, useTheme } from '@material-ui/core';
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -27,7 +31,7 @@ export default function FormDialog() {
       <Button size="small" color="primary" onClick={handleClickOpen}>
         Register
       </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <Dialog fullScreen={fullScreen}  open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />

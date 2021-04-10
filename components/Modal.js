@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function ResponsiveDialog({skill}) {
+export default function ResponsiveDialog({skill, type}) {
   const [value, setValue] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
   const [open, setOpen] = React.useState(false);
@@ -72,13 +72,13 @@ export default function ResponsiveDialog({skill}) {
   };
 
   const handleSave = () => {
-    if(value>3 && image==null){
+    if(value>=3 && image==null){
       enqueueSnackbar('Upload a certificate to continue',{variant:'error'})
       return;
     }
     var pattern = /image-*/;
 
-    if (value>3 && !image.type.match(pattern)) {
+    if (value>=3 && !image.type.match(pattern)) {
       enqueueSnackbar('Invalid file format',{variant:'error'});
       return;
     }
@@ -97,7 +97,6 @@ export default function ResponsiveDialog({skill}) {
       .set({
         [skillid]:{
           points: value,
-          url:''
         }
       },{merge:true})
       .then((response) => {
@@ -164,7 +163,7 @@ export default function ResponsiveDialog({skill}) {
               />
               {value !== null && <Box ml={2}>{labels[hover !== -1 ? hover : value]}</Box>}
               {image!==null && <img src={URL.createObjectURL(image)} width={'100%'} />}
-              {imageUrl!=='' && image===null && <img src={imageUrl} width={'100%'}/>}
+              {value>=3 && imageUrl!=='' && image===null && <img src={imageUrl} width={'100%'}/>}
             {value>=3 &&(
               <div className={classes.imageuploader}>
                 <Button

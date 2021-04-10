@@ -125,6 +125,7 @@ export default function AddSkill() {
             <Grid item xs={12} >
             <TextField
                 autoFocus
+                multiline
                 variant="outlined"
                 margin="dense"
                 value={description}

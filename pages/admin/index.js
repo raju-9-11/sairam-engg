@@ -26,12 +26,16 @@ import ViewUsers from '../../components/AdminComponents/viewUsers';
 import Copyright from '../../components/Copyright';
 import SimpleBackdrop from '../../components/backDrop';
 import Custom from '../../components/custom404'
+import WorkIcon from '@material-ui/icons/Work';
+import CreateWork from '../../components/AdminComponents/createWork';
+import ViewAssignedWork from '../../components/AdminComponents/viewAssignedWork';
 
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: { 
+    paddingTop:'3vw',
     display: 'flex',
     [theme.breakpoints.up('sm')]: {
       paddingLeft:'10vh'
@@ -102,6 +106,9 @@ function Admin(props) {
     if(index===3){
       setTab(3);
     }
+    if(index===4){
+      setTab(4)
+    }
     setMobileOpen(false);
   }
 
@@ -111,16 +118,23 @@ function Admin(props) {
       <Divider />
       <List>
         {['Filter ', 'Manage Skills', 'Manage Fields','View Users'].map((text, index) => (
-          <ListItem button key={index} onClick={()=>handleClick(index)}>
+          <ListItem selected={tab===index} button key={index} onClick={()=>handleClick(index)}>
             <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: index==2? <RecentActorsIcon /> :<GroupIcon /> }</ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>
       <Divider />
-      <ListItem  button key={4} onClick={()=>handleClick(4)}>
+      <ListItem  selected={tab===4} button key={5} onClick={()=>handleClick(4)}>
+        <ListItemIcon> <WorkIcon /> </ListItemIcon>
+        <ListItemText primary={`Active work`}  />
+    </ListItem>
+ 
+        <CreateWork />
+      <Divider />
+      <ListItem  button key={4} onClick={()=>signout()}>
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
-        <ListItemText primary={`Logout`} onClick={()=>signout()} />
+        <ListItemText primary={`Logout`}  />
     </ListItem>
     </div>
   );
@@ -181,8 +195,8 @@ function Admin(props) {
             </Hidden>
         </nav>
         <footer className={classes.footer} >
-        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : <ViewUsers/>}
-        <Typography
+        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : tab===3? <ViewUsers/>: <ViewAssignedWork />}
+        {/* <Typography
             variant="subtitle1"
             align="center"
             color="textSecondary"
@@ -190,7 +204,7 @@ function Admin(props) {
           >
             This Website was developed by
           </Typography>
-          <Copyright />
+          <Copyright /> */}
         </footer>
         </div>}
         {(!user && !loading)||(user && user.type==0) && <Custom />}

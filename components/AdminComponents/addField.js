@@ -125,6 +125,7 @@ export default function AddField() {
             <Grid item xs={12} >
             <TextField
                 autoFocus
+                multiline
                 required
                 variant="outlined"
                 margin="dense"

@@ -1,14 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
 import Pagination from '@material-ui/lab/Pagination';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
+import User from './AdminComponents/viewUser'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
 export default function AlignItemsList(props) {
   const classes = useStyles();
   const itemsPerPage = 10;
+  const theme = useTheme();
+  const hide = useMediaQuery(theme.breakpoints.down('md'))
   const [page, setPage] = React.useState(1);
   const [noOfPages] = React.useState(
     Math.ceil(props.users.length / itemsPerPage)
@@ -54,26 +52,27 @@ export default function AlignItemsList(props) {
           .slice((page - 1) * itemsPerPage, page * itemsPerPage)
           .map((user,index) => {
               return (
-                  <div key={index} className={classes.root}>
+                <User user ={user} index={index} />
+                  // <div key={index} className={classes.root}>
                     
-                      <ListItem alignItems="flex-start">
-                        <ListItemAvatar>
-                        <Avatar alt={user.item.first_name} src="/static/images/avatar/1.jpg" />
-                        </ListItemAvatar>
-                        <ListItemText
-                            className={classes.item}
-                            primary={user.item.first_name +" "+user.item.last_name}
-                            secondary={
-                            <React.Fragment>
-                            {user.item.cid}
-                            </React.Fragment>
-                        }
-                        />
-                        <Typography variant='inherit'>
-                            {user.item.foe || user.item.email}
-                        </Typography>   
-                    </ListItem>
-                    </div>
+                  //     <ListItem alignItems="flex-start">
+                  //       <ListItemAvatar>
+                  //       <Avatar alt={user.item.first_name} src="/static/images/avatar/1.jpg" />
+                  //       </ListItemAvatar>
+                  //       <ListItemText
+                  //           className={classes.item}
+                  //           primary={user.item.first_name +" "+user.item.last_name}
+                  //           secondary={
+                  //           <React.Fragment>
+                  //           {user.item.cid}
+                  //           </React.Fragment>
+                  //       }
+                  //       />
+                  //       <Typography variant='inherit'>
+                  //           {!hide && user.item.email}
+                  //       </Typography>   
+                  //   </ListItem>
+                  //   </div>
               )
           })}
       </List>

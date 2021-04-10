@@ -27,6 +27,9 @@ import { useAuth } from '../../lib/auth';
 import Copyright from '../../components/Copyright';
 import SimpleBackdrop from '../../components/backDrop';
 import Custom from '../../components/custom404'
+import WorkIcon from '@material-ui/icons/Work';
+import viewWork from '../../components/viewWork';
+import ViewWork from '../../components/viewWork';
 
 const drawerWidth = 240;
 
@@ -67,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   },
   footer: {
+    paddingTop: theme.spacing(10),
+    width:'100%',
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
   },
@@ -98,6 +103,9 @@ function Dashboard(props) {
     if(index===2){
       setTab(2);
     }
+    if(index===3){
+      setTab(3);
+    }
     setMobileOpen(false);
   }
  
@@ -107,16 +115,21 @@ function Dashboard(props) {
       <Divider />
       <List>
         {['Profile Update', 'Skill Set', 'Field of Expertise'].map((text, index) => (
-          <ListItem button key={text}  onClick={()=>handleClick(index)}>
+          <ListItem selected = {tab===index} button key={text}  onClick={()=>handleClick(index)}>
             <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: <RecentActorsIcon /> }</ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>
       <Divider />
-      <ListItem  button key={4} >
+      <ListItem  selected={tab===3} button key={5} onClick={()=>handleClick(3)}>
+        <ListItemIcon> <WorkIcon /> </ListItemIcon>
+        <ListItemText primary={`View Work`}  />
+    </ListItem>
+      <Divider />
+      <ListItem  button key={4} onClick={()=>signout()}>
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
-        <ListItemText primary={`Logout`} onClick={()=>signout()} />
+        <ListItemText primary={`Logout`} />
     </ListItem>
     </div>
   );
@@ -178,8 +191,8 @@ function Dashboard(props) {
             </Hidden>
         </nav>
         <footer className={classes.footer} >
-        {tab===0? <ProfileUpdate /> : tab===1? <Skillset /> : <Foe/>}
-        <Typography
+        {tab===0? <ProfileUpdate /> : tab===1? <Skillset /> : tab===2? <Foe/>: <ViewWork />}
+        {/* <Typography
             variant="subtitle1"
             align="center"
             color="textSecondary"
@@ -187,7 +200,7 @@ function Dashboard(props) {
           >
             This Website was developed by
           </Typography>
-          <Copyright />
+          <Copyright /> */}
         </footer>
         </div>}
         {(!user && !loading)||(user && user.type==1) && <Custom />}

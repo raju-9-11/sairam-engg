@@ -78,7 +78,7 @@ export default function Filter() {
   const [ sp, setSp ] = useState(0);
   const [ fp, setFp ] = useState(0);
   const [ years, setYears ] = useState(0)
-  const [ spError, setSpError ] = useState(' ');
+  const [ spError, setSpError ] = useState('');
   const [ fpError, setFpError ] = useState('') 
   const [ skillError, setSkillError] = useState('');
   const [ fieldError , setFieldError] = useState('');
@@ -175,7 +175,7 @@ export default function Filter() {
         }
         return
       }
-      enqueueSnackbar("Select a category to filter")
+      enqueueSnackbar("Select a category to filter", {variant:'error'})
     
   
   }
@@ -391,7 +391,7 @@ export default function Filter() {
                             // inputProps={{ min: "0", max: "5", step: "0.5" }}
                             name="skillsp"
                             label="Skill Set (Skill Points)"
-                            id="skillspsp"
+                            id="skillsp"
                             variant="outlined"
                         />
                         </Grid>
@@ -404,7 +404,7 @@ export default function Filter() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         className={classes.button1}
-                        onClick={handleGet}
+                        onClick={ handleGet}
                       >
                         Get
                       </Button>
