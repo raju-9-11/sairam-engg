@@ -124,7 +124,7 @@ function Home() {
                 name="email"
                 onChange={(Event)=>setEmail(Event.target.value)}
                 value={email}
-                autoComplete="email"
+                autoComplete="off"
                 variant="outlined"
                 autoFocus
               />

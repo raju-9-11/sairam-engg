@@ -38,7 +38,8 @@ const useStyles = makeStyles({
     borderRadius:'3vh',
     width:"inherit",
     display:'inline-flex',
-    padding:'1vh'
+    padding:'1vh',
+    margin:'1vh'
   }
 })
 
@@ -63,51 +64,23 @@ export default function AdminWorkProps(props) {
 
   const [  workName, setWorkName ] = useState(props.work.name);
   const [ workNameError, setWorkNameError ] = useState('');
-  const firestore = firebase.firestore();
   const [ users, setUsers ] = useState([]);
   const [ filtered, setFiltered ] = useState([]);
   const [ temp, setTemp ] = useState([]);
   const [ faculty, setFaculty ] = useState('');
+  const [ links, setLinks ] = useState(props.work.links);
+  const [ userLinks, setUserLinks ] = useState(props.work.userLinks);
   const [ description , setDescription ] = useState(props.work.description);
   const [ descriptionError, setDescriptionError ] = useState('');
   const [ facultyError, setFacultyError ] = useState('');
-  const [ file , setFile ] = useState([]);
+  const [ file , setFile ] = useState(props.work.user.files);
   const [ userType, setUserType ] = useState('---Select---');
   const [ typeError, setTypeError ] = useState('');
   const router = useRouter();
+  const firestore = firebase.firestore();
+  const storage = firebase.storage();
 
   const { signupWithEmail } = useAuth();
-
-
-  useEffect(()=>{
-      const num = types.filter(val=>val.name===userType)
-      if(num.length>0){
-          const final = users.filter(val=>val.item.type===num[0].type)
-          setFiltered(final)
-      }else{
-          setFiltered([])
-      }
-  },[userType])
-
-
-  useEffect(() =>{ 
-    firestore
-      .collection('users')
-      .get()
-      .then((response) => {
-        var lst =[]
-        response.forEach((user) =>{
-          lst.push(user.data());
-        })
-        setTemp(lst);
-        const correctlyShapedArray = lst.map(val => ({
-            item: Object.assign(val, {}),
-            matches: [],
-            score: 1
-        }));
-          setUsers(correctlyShapedArray);
-      })
-  },[])
 
   const handleAddFiles = files => {
       var lst =[]
@@ -117,7 +90,34 @@ export default function AdminWorkProps(props) {
       setFile(lst)
   }
 
+
   const handleRemove = () => {
+
+    if(props.work.files.length>0){
+      props.work.files.forEach((doc)=>{
+        try{
+          storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.name}/${doc}`);
+          ref
+            .delete()
+        }
+        catch(e){
+          //
+        }
+      })
+    }
+
+    if(props.work.userFiles.length>0){
+      props.work.userFiles.forEach((doc)=>{
+        try{
+          storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.name}/${doc}`);
+          ref
+            .delete()
+        }
+        catch(e){
+          //
+        }
+      })
+    }
     firestore
       .collection('work')
       .doc('admin')
@@ -159,23 +159,7 @@ export default function AdminWorkProps(props) {
           files: file.length>0? file.map(val=>val.name) : []
         })
         .then((response ) => {
-            // firestore
-            //   .collection('work')
-            //   .doc('user')
-            //   .collection(props.work.assigned.uid)
-            //   .doc(user.uid)
-            //   .set({
-            //     user:props.work.user,
-            //     assigned:props.work.assigned,
-            //     name:workName,
-            //     description: description,
-            //   },{merge:true})
-            //   .then((response) => {
-                enqueueSnackbar("Changes Saved", {variant:'success'})
-            //   })
-            //   .catch((err)=>{
-            //     enqueueSnackbar("Error Occured", {variant:'error'});
-            //   })
+              enqueueSnackbar("Changes Saved", {variant:'success'})
           })
           .catch((err)=>{
             enqueueSnackbar("Error Occured", {variant:'error'})
@@ -244,57 +228,25 @@ export default function AdminWorkProps(props) {
                   variant="outlined"
               />
               </Grid>
-              {/* <Grid item xs={12}>
-                <TextField
-                select
-                fullWidth
-                label="User type"
-                value={userType}
-                onChange={(Event)=>setUserType(Event.target.value)}
-                error={typeError!=''}
-                helperText={typeError}
-                variant="outlined"
-                >
-                <MenuItem key={'0a2'} value={'---Select---'}>
-                    {'---Select---'}
-                    </MenuItem>
-                {types.map((option) => (
-                    <MenuItem key={option.type} value={option.name}>
-                    {option.name}
-                    </MenuItem>
-                ))}
-                </TextField>
-            </Grid>
               <Grid item xs={12}>
-                {users&&
-                <Autocomplete
-                    id="demo"
-                    options={filtered}
-                    getOptionLabel={(option) => option.item.first_name+ " " +option.item.last_name+" ("+option.item.cid+")"}
-                    onChange={(event, value) =>setFaculty(faculty)}
-                    renderInput={(params) => <TextField {...params} error={facultyError!=''} helperText={facultyError} label="Select User" variant="outlined" />}
-                    />}
-                </Grid> */}
-            {/* <Grid item xs={12}>
-            <Button 
-                fullWidth
-                variant="contained"
-                component="label">
-                Upload Files
-                <input
-                    type="file"
-                    hidden
-                    multiple
-                    onChange={(Event)=>handleAddFiles(Event.target.files)}
-                />
-              </Button>  
-            </Grid> */}
-                <Grid item xs={12}>
                 {props.work.files.length>0 &&
                     props.work.files.map((item,index)=>{
                         return(
-                            <div className={classes.chip} key ={index}>
-                              <Button size="small">
+                            <div className={classes.chip} key={index}>
+                              <Button size="small" onClick={()=>window.open(links[index],"_blank")}>
+                                {item}
+                              </Button>
+                            </div>
+                        )
+                    })
+                }
+                </Grid> 
+                <Grid item xs={12}>
+                {props.work.userFiles.length>0 &&
+                    props.work.userFiles.map((item,index)=>{
+                        return(
+                            <div className={classes.chip} key={index}>
+                              <Button size="small" onClick={()=>window.open(userLinks[index],"_blank")}>
                                 {item}
                               </Button>
                             </div>

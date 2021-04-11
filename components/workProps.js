@@ -4,21 +4,19 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import { CircularProgress, makeStyles, MenuItem } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { checkPassword , checkEmail, checkname, checkCid, checkExp, checkSkill } from '../lib/func'
 import { useSnackbar } from 'notistack';
 import { useAuth } from '../lib/auth'
-import { useRouter } from 'next/router'
 import firebase from '../lib/firebase'
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
-import { Label } from '@material-ui/icons';
-import Chip from '@material-ui/core/Chip';
-
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CheckIcon from '@material-ui/icons/Check'
 
 const useStyles = makeStyles({
   root: {
-      width:'100%'
+      width:'100%',
   },
   form:{
   },
@@ -38,7 +36,8 @@ const useStyles = makeStyles({
     borderRadius:'3vh',
     width:"inherit",
     display:'inline-flex',
-    padding:'1vh'
+    padding:'1vh',
+    margin:'1vh'
   }
 })
 
@@ -61,35 +60,15 @@ export default function WorkProps(props) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [  workName, setWorkName ] = useState('');
-  const [ workNameError, setWorkNameError ] = useState('');
-  const [ users, setUsers ] = useState([]);
-  const [ filtered, setFiltered ] = useState([]);
-  const [ temp, setTemp ] = useState([]);
-  const [ faculty, setFaculty ] = useState('');
-  const [ description , setDescription ] = useState('');
-  const [ descriptionError, setDescriptionError ] = useState('');
-  const [ facultyError, setFacultyError ] = useState('');
+  const [ selected, setSelected ] = useState(props.work.completed)
   const [ file , setFile ] = useState([]);
-  const [ userType, setUserType ] = useState('---Select---');
-  const [ typeError, setTypeError ] = useState('');
-  const [ links, setLinks ] = useState([]);
+  const [ links, setLinks ] = useState(props.work.links);
+  const [ userLinks, setUserLinks ] = useState(props.work.userLinks);
   const [ loading, setLoading ] = useState(false)
   const firestore = firebase.firestore();
   const storage = firebase.storage();
   
   const { signupWithEmail } = useAuth();
-
-
-  useEffect(()=>{
-      const num = types.filter(val=>val.name===userType)
-      if(num.length>0){
-          const final = users.filter(val=>val.item.type===num[0].type)
-          setFiltered(final)
-      }else{
-          setFiltered([])
-      }
-  },[userType])
 
 
   const handleAddFiles = files => {
@@ -102,35 +81,56 @@ export default function WorkProps(props) {
 
   const handleCreate = (e) => {
       e.preventDefault();
-      setWorkNameError(checkname(workName));
-      setDescriptionError(description.length>5?"":"Description not long enough")
-      setFacultyError(faculty===""?"Select a user":"")
+
   }
 
   const handleWorkDone = (e) => {
     e.preventDefault();
+    if(props.work.completed){
+      enqueueSnackbar("Upload old files after making changes")
+    }
+    firestore
+      .collection('work')
+      .doc(props.work.id)
+      .set({
+        completed: !props.work.completed,
+        userFiles: file.length>0? file.map(val=>val.name) : []
+      },{merge:true})
+      .then((response)=> {
+        if(file.length>0){
+          file.map((doc)=>{
+            let ref = storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${workName}/${doc.name}`);
+            ref
+              .put(doc)
+              .then((snap)=>{
+                ref
+                  .getDownloadURL()
+                  .then((url)=>{
+                    firestore
+                      .collection('work')
+                      .doc(props.work.id)
+                      .update({
+                        userLinks: firebase.firestore.FieldValue.arrayUnion(url)
+                      })
+                  })
+              })
+              .catch((err)=>{
+                enqueueSnackbar('Error Uploading Files Try again',{variant:'error'})
+              })
+            })
+          }
+        enqueueSnackbar("Work status updated",{variant:'success'})
+        props.close();
+      })
+      .catch((err)=>{
+        enqueueSnackbar("Error updating ",{variant:'error'})
+        console.log(err)
+      })
   }
 
   const handleDownload = (e) => {
     e.preventDefault();
-    setLoading(true)
-    let lst =[]
-    props.work.files.forEach((val)=>{
-      storage.ref()
-        .child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.name}/${val}`)
-        .getDownloadURL()
-        .then((url)=>{
-          lst.push(url)
-          setLinks([url,...links])
-        })
-        .catch((err)=>{
-          enqueueSnackbar("Error Occured",{variant:'error'});
-          console.log(err)
-          setLoading(false)
-        })
-        
-      })
-      setLoading(false)
+    
   }
 
 
@@ -180,95 +180,60 @@ export default function WorkProps(props) {
                   variant="outlined"
               />
               </Grid>
-              {/* <Grid item xs={12}>
-                <TextField
-                select
-                fullWidth
-                label="User type"
-                value={userType}
-                onChange={(Event)=>setUserType(Event.target.value)}
-                error={typeError!=''}
-                helperText={typeError}
-                variant="outlined"
-                >
-                <MenuItem key={'0a2'} value={'---Select---'}>
-                    {'---Select---'}
-                    </MenuItem>
-                {types.map((option) => (
-                    <MenuItem key={option.type} value={option.name}>
-                    {option.name}
-                    </MenuItem>
-                ))}
-                </TextField>
-            </Grid>
               <Grid item xs={12}>
-                {users&&
-                <Autocomplete
-                    id="demo"
-                    options={filtered}
-                    getOptionLabel={(option) => option.item.first_name+ " " +option.item.last_name+" ("+option.item.cid+")"}
-                    onChange={(event, value) =>setFaculty(faculty)}
-                    renderInput={(params) => <TextField {...params} error={facultyError!=''} helperText={facultyError} label="Select User" variant="outlined" />}
-                    />}
-            </Grid> */}
-            {links.length>0 &&
-              <>
-              <Grid item xs={12}>
-                  {links.map((item,index)=>{
-                      return(
-                          <div className={classes.chip} key ={index}>
-                            <Button size="small" href={item} >
-                              {props.work.files[index]}
-                            </Button>
-                          </div>
-                      )
-                  })}
-                  </Grid>
-                  </>
+                {props.work.files.length>0 &&
+                    props.work.files.map((item,index)=>{
+                        return(
+                            <div className={classes.chip} key={index}>
+                              <Button size="small" onClick={()=>window.open(links[index],"_blank")}>
+                                {item}
+                              </Button>
+                            </div>
+                        )
+                    })
+                }
+                </Grid> 
+                <Grid item xs={12}>
+                {props.work.userFiles.length>0 &&
+                    props.work.userFiles.map((item,index)=>{
+                        return(
+                            <div className={classes.chip} key={index}>
+                              <Button size="small" onClick={()=>window.open(userLinks[index],"_blank")}>
+                                {item}
+                              </Button>
+                            </div>
+                        )
+                    })
+                }
+                </Grid> 
+            {!props.work.completed &&
+              <Grid item xs={6}>
+              <Button 
+                  fullWidth
+                  variant="contained"
+                  component="label">
+                  Upload Files
+                  <input
+                      type="file"
+                      hidden
+                      multiple
+                      onChange={(Event)=>handleAddFiles(Event.target.files)}
+                  />
+              </Button>
+              </Grid>
             }
-            {props.work.files.length>0 &&
-              <>
-              <Grid item xs={12}>
-                  {props.work.files.map((item,index)=>{
-                      return(
-                          <div className={classes.chip} key ={index}>
-                            <Button size="small" >
-                              {item}
-                            </Button>
-                          </div>
-                      )
-                  })}
-                  {links.length<props.work.files.length &&
-                   <Button onClick={handleDownload} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
-                      Download Files
-                  </Button>}
-              </Grid> 
-              </>
-              }
+            {!props.work.completed &&
             <Grid item xs={6}>
-            <Button 
-                fullWidth
-                variant="contained"
-                component="label">
-                Upload Files
-                <input
-                    type="file"
-                    hidden
-                    multiple
-                    onChange={(Event)=>handleAddFiles(Event.target.files)}
-                />
-            </Button>
-            </Grid>
-            <Grid item xs={6}>
-            <Button 
-                fullWidth
-                className={clsx(classes.remove, className)}
-                variant="contained"
-                onClick={()=>handleAddFiles({})}
-                component="label">
-                Remove
-            </Button>
-            </Grid>
+              <Button 
+                  fullWidth
+                  className={clsx(classes.remove, className)}
+                  variant="contained"
+                  onClick={()=>handleAddFiles([])}
+                  component="label">
+                  Remove
+              </Button>
+              </Grid>
+            }
             <Grid item xs={12}>
             {file.length>0 &&
                 file.map((item,index)=>{
@@ -283,15 +248,17 @@ export default function WorkProps(props) {
             }
             </Grid>
           </Grid>
-         {/* {props.work.completed && 
-         <Button onClick={handleCreate} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
-            
-          </Button>} */}
 
           {!props.work.completed &&
+          <Button onClick={handleWorkDone} fullWidth  variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
+            <CheckIcon /> Mark as Done
+           </Button>
+          }
+          {props.work.completed &&
           <Button onClick={handleWorkDone} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
-            Mark as Done
-          </Button>}
+            <CheckCircleIcon /> Completed
+           </Button>
+          }
           <Grid container justify="flex-end" className={classes.button}>
           </Grid>
         </Box>

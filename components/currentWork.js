@@ -16,6 +16,7 @@ import WorkProps from './workProps';
 import AdminWorkProps from './AdminComponents/adminWorkProps';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
+import { CheckCircle } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme)=>({
         flex: 1,
       },
       iconButton: {
-        padding: 10,
+        margin: 10,
       },
       divider: {
         height: 28,
@@ -55,6 +56,8 @@ export default function CurrentWork({work, index, ...props}) {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -86,7 +89,9 @@ export default function CurrentWork({work, index, ...props}) {
               {"  - " + work.description.substring(0,30)+"...."}
             </React.Fragment>
           }
-        />
+          />
+          {work.completed && <CheckCircle className={classes.iconButton} />}
+        <br />
       </ListItem>
       <Divider variant="inset" component="li" />
     </List>
@@ -96,7 +101,7 @@ export default function CurrentWork({work, index, ...props}) {
           <DialogContentText>
              {props.user? "Complete the following work and update work status.": "Edit work details"}
           </DialogContentText>
-          {props.user? <WorkProps work={work} /> : <AdminWorkProps work={work} /> }
+          {props.user? <WorkProps close={()=>setOpen(false)} work={work} /> : <AdminWorkProps work={work} close={()=>setOpen(false)}  /> }
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

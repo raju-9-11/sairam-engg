@@ -37,7 +37,8 @@ const useStyles = makeStyles({
     borderRadius:'3vh',
     width:"inherit",
     display:'inline-flex',
-    padding:'1vh'
+    padding:'1vh',
+    margin:'1vh'
   }
 })
 
@@ -125,66 +126,54 @@ export default function AssignWork(props) {
       setWorkNameError(checkname(workName));
       setDescriptionError(description.length>5?"":"Description not long enough")
       setFacultyError(faculty.item===undefined?"Select a user":"")
-      // try{
-      // }
-      // catch(err){
-      //   return;
-      // }
 
         if(faculty.item!=undefined && description.length>5 && checkname(workName)=== "" ){
           firestore
             .collection('work')
-            .doc()
-            .set({
+            .add({
               user:self,
               assigned:faculty.item,
               name:workName,
               description: description,
               completed:false,
-              files: file.length>0? file.map(val=>val.name) : []
+              files: file.length>0? file.map(val=>val.name) : [],
+              links:[],
+              userFiles: [],
+              userLinks: []
             })
             .then((response ) => {
-              // firestore
-              //   .collection('work')
-              //   .doc('user')
-              //   .collection(faculty.item.uid)
-              //   .doc(user.uid)
-              //   .set({
-              //     user:self,
-              //     assigned:faculty.item,
-              //     name:workName,
-              //     description: description,
-              //     completed:false,
-              //     files: file.length>0? file.map(val=>val.name) : []
-              //   })
-              //   .then((response) => {
-                  if(file.length>0){
-                    file.map((doc)=>{
-                      let ref = storage.ref().child(`work/${user.uid}/${faculty.item.uid}/${workName}/${doc.name}`);
-                      ref
-                        .put(doc)
-                        .then((snap)=>{
-                          // enqueueSnackbar("success")
-                        })
-                        .catch((err)=>{
-                          enqueueSnackbar('Error Uploading Files Try again',{variant:'error'})
-                        })
+                if(file.length>0){
+                  file.map((doc)=>{
+                    let ref = storage.ref().child(`work/${user.uid}/${faculty.item.uid}/${workName}/${doc.name}`);
+                    ref
+                      .put(doc)
+                      .then((snap)=>{
+                        ref
+                          .getDownloadURL()
+                          .then((url)=>{
+                            firestore
+                              .collection('work')
+                              .doc(response.id)
+                              .update({
+                                links: firebase.firestore.FieldValue.arrayUnion(url)
+                              })
+                          })
+                        // enqueueSnackbar("success")
                       })
-                    }
-                    enqueueSnackbar("Work Assigned", {variant:'success'})
+                      .catch((err)=>{
+                        enqueueSnackbar('Error Uploading Files Try again',{variant:'error'})
+                      })
+                    })
+                  }
+                  props.close()
+                  enqueueSnackbar("Work Assigned", {variant:'success'})
                   setWorkName('');
                   setDescription('');
                   setFile([]);
-              //   })
-              //   .catch((err)=>{
-              //     enqueueSnackbar("Error Occured", {variant:'error'});
-              //   })
             })
             .catch((err)=>{
               enqueueSnackbar("Error Occured ", {variant:'error'})
             })
-        }else{
-          return;
         }
   }
 

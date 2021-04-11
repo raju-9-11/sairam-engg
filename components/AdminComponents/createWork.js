@@ -44,7 +44,7 @@ export default function CreateWork() {
           <DialogContentText>
             Fill in the following details to create a work.
           </DialogContentText>
-          <AssignWork />
+          <AssignWork close={handleClose} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
