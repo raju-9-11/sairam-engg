@@ -91,33 +91,20 @@ export default function AdminWorkProps(props) {
   }
 
 
-  const handleRemove = () => {
-
-    if(props.work.files.length>0){
-      props.work.files.forEach((doc)=>{
-        try{
-          storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.name}/${doc}`);
-          ref
-            .delete()
-        }
-        catch(e){
-          //
-        }
-      })
-    }
-
-    if(props.work.userFiles.length>0){
-      props.work.userFiles.forEach((doc)=>{
-        try{
-          storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.name}/${doc}`);
-          ref
-            .delete()
-        }
-        catch(e){
-          //
-        }
-      })
-    }
+  const handleRemove = (e) => {
+    e.preventDefault();
+    const ref =storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.id}`);
+    ref.listAll()
+       .then(function(list) {
+         list.items.forEach((item)=>{
+           item.delete().then((url)=>{
+             console.log(url)
+           })
+         })
+       })
+       .catch((err)=>{
+         console.log(err)
+       })
     firestore
       .collection('work')
       .doc('admin')
@@ -139,6 +126,7 @@ export default function AdminWorkProps(props) {
       .catch((err) =>{ 
         enqueueSnackbar("Error Occured!! Try again",{variant:'error'})
       })
+      props.close();
       
   }
 
@@ -149,24 +137,20 @@ export default function AdminWorkProps(props) {
       if(description.length>5 && checkname(workName)=== "" ){
         firestore
         .collection('work')
-        .doc()
+        .doc(props.work.id)
         .set({
-          user:self,
-          assigned:faculty.item,
           name:workName,
           description: description,
-          completed:false,
-          files: file.length>0? file.map(val=>val.name) : []
-        })
+          completed:props.work.completed,
+        },{merge:true})
         .then((response ) => {
               enqueueSnackbar("Changes Saved", {variant:'success'})
           })
           .catch((err)=>{
             enqueueSnackbar("Error Occured", {variant:'error'})
           })
-      }else{
-        return;
       }
+      props.close();
   }
 
 

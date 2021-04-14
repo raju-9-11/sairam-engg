@@ -1,0 +1,1 @@
+_N_E=(window.webpackJsonp_N_E=window.webpackJsonp_N_E||[]).push([[15],{KGfn:function(n,_,o){(window.__NEXT_P=window.__NEXT_P||[]).push(["/admin",function(){return o("iooJ")}])}},[["KGfn",0,2,4,6,1,3,5,7,8]]]);

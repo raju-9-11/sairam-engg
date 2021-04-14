@@ -5,31 +5,11 @@ import firebase from '../lib/firebase'
 import { useAuth } from '../lib/auth';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  nowork: {
     display:'flex',
     flexDirection:'column',
-    
-    alignItems: 'center',
-  },
-  pap: {
-    marginBottom:'5vh',
-    padding: '2px 4px',
-    display: 'flex',
-    width: 400,
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
-  divider: {
-    height: 28,
-    margin: 4,
-  },
-  inline: {
-    display: 'inline',
+    alignItems:'center',
+    margin:theme.spacing(10)
   },
   current: {
     [theme.breakpoints.up('sm')]: {
@@ -72,9 +52,13 @@ export default function ViewAssignedWork() {
     <div className={classes.current}>
    { activeWork.map((work, index)=>{
       return(
-        <CurrentWork user work = {work} index ={index} />
+        <CurrentWork key={work.id} user work = {work} index ={index} />
       )
     })}
+    {activeWork.length<1 &&
+     <div className = {classes.nowork}>
+     <h2>No active work </h2>
+   </div>}
     </div>
     </>
   );

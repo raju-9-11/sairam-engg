@@ -57,6 +57,8 @@ export default function CurrentWork({work, index, ...props}) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const titleAdd = work.completed? "(Completed)": ""
+
 
 
   const handleClickOpen = () => {
@@ -96,7 +98,7 @@ export default function CurrentWork({work, index, ...props}) {
       <Divider variant="inset" component="li" />
     </List>
       <Dialog fullScreen={fullScreen} className={classes.root} open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">{work.name}</DialogTitle>
+        <DialogTitle id="form-dialog-title">{work.name} {!props.user && titleAdd}</DialogTitle>
         <DialogContent>
           <DialogContentText>
              {props.user? "Complete the following work and update work status.": "Edit work details"}

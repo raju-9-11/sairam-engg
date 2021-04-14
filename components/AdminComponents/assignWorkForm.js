@@ -116,6 +116,11 @@ export default function AssignWork(props) {
   const handleAddFiles = files => {
       var lst =[]
       for(let i=0;i<files.length;i++){
+        if(/^\d/.test(files[i].name)){
+          enqueueSnackbar('File name should start with character',{variant:'error'}) 
+          setFile([])
+          return;
+        }
           lst.push(files[i])
       }
       setFile(lst)
@@ -144,7 +149,7 @@ export default function AssignWork(props) {
             .then((response ) => {
                 if(file.length>0){
                   file.map((doc)=>{
-                    let ref = storage.ref().child(`work/${user.uid}/${faculty.item.uid}/${workName}/${doc.name}`);
+                    let ref = storage.ref().child(`work/${user.uid}/${faculty.item.uid}/${response.id}/${doc.name}`);
                     ref
                       .put(doc)
                       .then((snap)=>{
