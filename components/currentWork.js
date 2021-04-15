@@ -17,6 +17,7 @@ import AdminWorkProps from './AdminComponents/adminWorkProps';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
 import { CheckCircle } from '@material-ui/icons';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -57,7 +58,27 @@ export default function CurrentWork({work, index, ...props}) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const titleAdd = work.completed? "(Completed)": ""
+  Date.prototype.toShortFormat = function() {
+
+    let monthNames =["Jan","Feb","Mar","Apr",
+                      "May","Jun","Jul","Aug",
+                      "Sep", "Oct","Nov","Dec"];
+    
+    let day = this.getDate();
+    
+    let monthIndex = this.getMonth();
+    let monthName = monthNames[monthIndex];
+    
+    let year = this.getFullYear();
+    
+    return `${day}-${monthName}-${year}`;  
+}
+
+
+  const sdate = work.createdAt.toDate();
+  const ddate = work.dueDate.toDate();
+
+  const titleAdd = work.approved? "(Completed)": work.completed? "(Submitted)": ""
 
 
 
@@ -74,7 +95,7 @@ export default function CurrentWork({work, index, ...props}) {
       <List className={classes.root} key={index}>
       <ListItem button alignItems="flex-start" onClick={handleClickOpen}>
         <ListItemAvatar>
-          <Avatar alt={work.user.first_name} src="/static/images/avatar/1.jpg" />
+          <Avatar alt={work.user.first_name}  />
         </ListItemAvatar>
         <ListItemText
           primary={work.name}
@@ -88,12 +109,27 @@ export default function CurrentWork({work, index, ...props}) {
               >
                 {work.user.first_name+ " " + work.user.last_name}
               </Typography>
-              {"  - " + work.description.substring(0,30)+"...."}
+              {"  - " +   work.priority + " - " + work.description.substring(0,30)+"...."}
             </React.Fragment>
           }
           />
-          {work.completed && <CheckCircle className={classes.iconButton} />}
-        <br />
+          {!fullScreen &&
+          <>
+            <ListItemText
+            secondary={
+              <React.Fragment>
+                {work.completed && ! work.approved && <ErrorOutlineIcon className={classes.iconButton} /> }
+                {work.approved && <CheckCircle className={classes.iconButton} /> }
+              </React.Fragment>
+            }
+            />
+
+        
+            {"Created At:  " + sdate.toShortFormat()}
+          <br />
+          {" Due date " +   ddate.toShortFormat()}
+          <br />
+          </>}
       </ListItem>
       <Divider variant="inset" component="li" />
     </List>

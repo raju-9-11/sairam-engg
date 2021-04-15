@@ -13,6 +13,8 @@ import firebase from '../lib/firebase'
 import clsx from 'clsx';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CheckIcon from '@material-ui/icons/Check'
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { KeyboardDatePicker } from '@material-ui/pickers';
 
 const useStyles = makeStyles({
   root: {
@@ -89,6 +91,38 @@ export default function WorkProps(props) {
 
   }
 
+
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if(file.length>0 ){
+      file.map((doc)=>{
+        let ref = storage.ref().child(`work/${props.work.user.uid}/${props.work.assigned.uid}/${props.work.id}/${doc.name}`);
+        ref
+          .put(doc)
+          .then((snap)=>{
+            ref
+              .getDownloadURL()
+              .then((url)=>{
+                firestore
+                  .collection('work')
+                  .doc(props.work.id)
+                  .update({
+                    userFiles: firebase.firestore.FieldValue.arrayUnion(doc.name),
+                    userLinks: firebase.firestore.FieldValue.arrayUnion(url)
+                  })
+              })
+          })
+          .catch((err)=>{
+            enqueueSnackbar('Error Uploading Files Try again',{variant:'error'})
+          })
+        })
+      }
+    enqueueSnackbar("Work saved",{variant:'success'})
+    props.close();
+
+  }
+
   const handleWorkDone = (e) => {
     e.preventDefault();
     if(props.work.completed){
@@ -154,10 +188,11 @@ export default function WorkProps(props) {
             <Grid item xs={12}>
               <TextField
                 name="workName"
+                disabled
                 fullWidth
                 value={props.work.name}
                 id="workName"
-                label="Work"
+                label="Task Name"
                 variant="outlined"
                 autoFocus
               />
@@ -165,11 +200,37 @@ export default function WorkProps(props) {
             <Grid item xs={12} >
               <TextField
                   name="description"
+                  disabled
                   fullWidth
                   multiline
                   id="description"
                   value={props.work.description}
-                  label="Work Description"
+                  label="Task Description"
+                  autoFocus
+                  variant="outlined"
+              />
+              </Grid>
+
+              <Grid item xs={12}>
+                  <TextField
+                      name="lead"
+                      fullWidth
+                      disabled
+                      id="lead"
+                      value={props.work.user.first_name+" ("+props.work.user.cid+")"}
+                      label={"Assigned by" }
+                      autoFocus
+                      variant="outlined"
+                  />
+                </Grid>
+              <Grid item xs={12} >
+              <TextField
+                  name="owner"
+                  disabled
+                  fullWidth
+                  id="owner"
+                  value={props.work.nature}
+                  label="Task Nature"
                   autoFocus
                   variant="outlined"
               />
@@ -177,14 +238,76 @@ export default function WorkProps(props) {
               <Grid item xs={12} >
               <TextField
                   name="owner"
+                  disabled
                   fullWidth
                   id="owner"
-                  value={props.work.user.first_name+" ("+props.work.user.cid+")"}
-                  label="Assigned by"
+                  value={props.work.priority}
+                  label="Task Priority"
                   autoFocus
                   variant="outlined"
               />
               </Grid>
+
+              <Grid item xs={6} >
+              <KeyboardDatePicker
+                disableToolbar
+                disabled
+                inputVariant="outlined"
+                fullWidth
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Created At"
+                value={props.work.createdAt.toDate()}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+              </Grid>
+              <Grid item xs={6} >
+              <KeyboardDatePicker
+                disableToolbar
+                disabled
+                inputVariant="outlined"
+                fullWidth
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Due Date"
+                value={props.work.dueDate.toDate()}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+              </Grid>
+
+              {props.work.team!=undefined && props.work.team.length>0 &&
+                 <Grid item xs={12}>
+                  <TextField
+                      name="lead"
+                      fullWidth
+                      disabled
+                      id="lead"
+                      value={props.work.assigned.first_name+" ("+props.work.assigned.cid+")"}
+                      label={"Team Lead" }
+                      autoFocus
+                      variant="outlined"
+                  />
+                </Grid>
+              }
+
+              {props.work.team!=undefined && props.work.team.length>0 &&
+                 <Grid item xs={12}>
+                 <Autocomplete
+                     id="team"
+                     multiple
+                     value={props.work.team}
+                     options={props.work.team}
+                     getOptionLabel={(option) => option.first_name+ " " +option.last_name+" ("+option.cid+")"}
+                     renderInput={(params) => <TextField {...params} label="My Team" variant="outlined" />}
+                     />
+                </Grid>
+              }
               <Grid item xs={12}>
                 {props.work.files.length>0 &&
                     props.work.files.map((item,index)=>{
@@ -211,6 +334,7 @@ export default function WorkProps(props) {
                     })
                 }
                 </Grid> 
+              
             {!props.work.completed &&
               <Grid item xs={6}>
               <Button 
@@ -254,14 +378,20 @@ export default function WorkProps(props) {
             </Grid>
           </Grid>
 
-          {!props.work.completed &&
+          {!props.work.completed && props.work.assigned.uid!==user.uid &&
+          <Button onClick={handleSave} fullWidth  variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
+            <CheckIcon /> Save Work
+           </Button>
+          }
+
+          {!props.work.completed && props.work.assigned.uid===user.uid &&
           <Button onClick={handleWorkDone} fullWidth  variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
             <CheckIcon /> Mark as Done
            </Button>
           }
-          {props.work.completed &&
+          {!props.work.approved && props.work.completed  &&
           <Button onClick={handleWorkDone} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
-            <CheckCircleIcon /> Completed
+            <CheckCircleIcon /> Submitted
            </Button>
           }
           <Grid container justify="flex-end" className={classes.button}>

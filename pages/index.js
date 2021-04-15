@@ -159,7 +159,7 @@ function Home() {
               <Grid container className={classes.form}>
                 <Grid item xs>
                 <Button size="small" color="primary" onClick={onResetPassword}>
-                    Forgot password?
+                    Reset password
                   </Button>
                 </Grid>
                 <Grid item>

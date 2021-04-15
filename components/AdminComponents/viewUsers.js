@@ -8,6 +8,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import AlignItemsList from '../listview';
 import firebase from '../../lib/firebase'
 import Fuse from 'fuse.js'
+import { useAuth } from '../../lib/auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +53,7 @@ export default function ViewUsers(props) {
   const [ temp , setTemp ] = useState([]);
   const [ search, setSearch ] = useState('')
   const firestore = firebase.firestore();
+  const { user , loading } = useAuth();
   
   useEffect(() => {
     const fuse = new Fuse(users,{
@@ -72,6 +74,7 @@ export default function ViewUsers(props) {
           lst.push(user.data());
         })
         setUsers(lst);
+        lst = lst.filter(val=>val.uid!=user.uid);
         const correctlyShapedArray = lst.map(val => ({
           item: Object.assign(val, {}),
           matches: [],

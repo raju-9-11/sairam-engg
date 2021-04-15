@@ -20,6 +20,10 @@ import PersonIcon from '@material-ui/icons/Person'
 import BookIcon from '@material-ui/icons/Book';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import GroupIcon from '@material-ui/icons/Group';
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import StarBorder from '@material-ui/icons/StarBorder';
 import { useAuth } from '../../lib/auth'
 import Filter from '../../components/AdminComponents/filter';
 import ViewUsers from '../../components/AdminComponents/viewUsers';
@@ -29,6 +33,8 @@ import Custom from '../../components/custom404'
 import WorkIcon from '@material-ui/icons/Work';
 import CreateWork from '../../components/AdminComponents/createWork';
 import ViewAssignedWork from '../../components/AdminComponents/viewAssignedWork';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import Report from '../../components/AdminComponents/report';
 
 
 const drawerWidth = 240;
@@ -75,6 +81,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
   },
+  nested: {
+    paddingLeft: theme.spacing(4),
+  },
 }));
 
 function Admin(props) {
@@ -85,6 +94,12 @@ function Admin(props) {
   const { user, loading , signout } = useAuth();
   const [ tab , setTab ] = React.useState(0)
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleSetClick = () => {
+    setOpen(!open);
+  };
+
 
 
   const handleDrawerToggle = () => {
@@ -94,21 +109,7 @@ function Admin(props) {
   const router = useRouter();
 
   const handleClick = (index) => {
-    if(index===0){
-      setTab(0);
-    }
-    if(index===1){
-      setTab(1);
-    }
-    if(index===2){
-      setTab(2);
-    }
-    if(index===3){
-      setTab(3);
-    }
-    if(index===4){
-      setTab(4)
-    }
+    setTab(index);
     setMobileOpen(false);
   }
 
@@ -119,20 +120,44 @@ function Admin(props) {
       <List>
         {['Filter ', 'Manage Skills', 'Manage Fields','View Users'].map((text, index) => (
           <ListItem selected={tab===index} button key={index} onClick={()=>handleClick(index)}>
-            <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: index==2? <RecentActorsIcon /> :<GroupIcon /> }</ListItemIcon>
+            <ListItemIcon>
+              {index  === 0 ?
+               <PersonIcon />
+                : index === 1 ? 
+                <BookIcon />
+                : index==2? 
+                <RecentActorsIcon />
+                 :<GroupIcon /> 
+                 }</ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
       </List>
       <Divider />
-      <ListItem  selected={tab===4} button key={5} onClick={()=>handleClick(4)}>
+      <ListItem selected={tab===4} onClick={()=>handleClick(4)} button key={5}>
         <ListItemIcon> <WorkIcon /> </ListItemIcon>
         <ListItemText primary={`Active work`}  />
-    </ListItem>
- 
+      </ListItem>
         <CreateWork />
+        <ListItem button onClick={handleSetClick}>
+        <ListItemIcon>
+          <AssessmentIcon />
+        </ListItemIcon>
+        <ListItemText primary="Assesment" />
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItem button key={6} selected={tab===6} onClick={()=>handleClick(6)} button key={7} className={classes.nested}>
+            <ListItemIcon>
+              <StarBorder />
+            </ListItemIcon>
+            <ListItemText primary="By Date" />
+          </ListItem>
+        </List>
+      </Collapse>
       <Divider />
-      <ListItem  button key={4} onClick={()=>signout()}>
+      <ListItem  button key={6} onClick={()=>signout()}>
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
         <ListItemText primary={`Logout`}  />
     </ListItem>
@@ -195,7 +220,7 @@ function Admin(props) {
             </Hidden>
         </nav>
         <footer className={classes.footer} >
-        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : tab===3? <ViewUsers/>: <ViewAssignedWork />}
+        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : tab===3? <ViewUsers/>: tab===4? <ViewAssignedWork />: <Report /> }
         {/* <Typography
             variant="subtitle1"
             align="center"

@@ -77,7 +77,7 @@ export default function Filter() {
   const [ users, setUsers ] = useState([]);
   const [ sp, setSp ] = useState(0);
   const [ fp, setFp ] = useState(0);
-  const [ years, setYears ] = useState(0)
+  const [ years, setYears ] = useState(null)
   const [ spError, setSpError ] = useState('');
   const [ fpError, setFpError ] = useState('') 
   const [ skillError, setSkillError] = useState('');
@@ -103,31 +103,20 @@ export default function Filter() {
     }
   }
 
-  const handleGet = () => {
-
-    // setSkillError(checkSkill(skill));
-    // setFieldError(checkSkill(foe));
-    setFpError(fp>-1 && fp<6 ?'': 'Valid points(0-5)')
-    setSpError(sp>-1 && sp<6 ?'': 'Valid points(0-5)')
-    
-    if(foe!='---Select---' ){
-      if(fp<0 || fp>6){
-        return;
-      }
-      const fid = getFID();
+  const foeFilter = (data) => {
+    const fid = getFID();
   
-      const fuse = new Fuse(users,{
+      const fuse = new Fuse(data,{
         includeScore:true,
         useExtendedSearch: true,
         keys: [`${fid}.points`]
       })
-      const data = fuse.search(`=${fp}`);
-      
-      if(skill!='---Select---' ){
-        if(sp<0 || sp>6){
-        return;
-      }
-        const sid = getSID();
+      return fuse.search(`=${fp}`);
+  }
+
+  const skillFilter = (data) => {
+
+    const sid = getSID();
     
         const sfuse  =new Fuse(data,{
           includeScore:true,
@@ -135,47 +124,61 @@ export default function Filter() {
           keys: [`${sid}.points`]
         })
     
-        const final = sfuse.search(`=${sp}`);
+        return sfuse.search(`=${sp}`);
 
-        if (final.length<1){
-          enqueueSnackbar("No Users Available")
-          setFiltered([])
+  }
+
+  const yearFilter = (data) => {
+
+    const sfuse  =new Fuse(data,{
+      includeScore:true,
+      useExtendedSearch: true,
+      keys: [`years`]
+    })
+
+    console.log(sfuse.search(`=${years}`))
+
+    return sfuse.search(`=${years}`);
+
+
+  }
+
+  const handleGet = () => {
+    setFpError(fp>-1 && fp<6 ?'': 'Valid points(0-5)')
+    setSpError(sp>-1 && sp<6 ?'': 'Valid points(0-5)')
+    let final = []
+    if(skill!='---Select---' ){
+      if(foe!='---Select---'){
+        if(years!=null){
+          final = yearFilter(skillFilter(foeFilter(users)))
         }else{
-          setFiltered(final)
+          final = skillFilter(foeFilter(users))
         }
-        return;
-
-      }
-      if (data.length<1){
-        enqueueSnackbar("No Users Available")
-        setFiltered([])
       }else{
-        setFiltered(data)
-      }
-      return;
-    } 
-    if(skill!='---Select---'){
-      if(sp<0 || sp>6){
-        return;
-      }
-        const sid = getSID();
-    
-        const sfuse  =new Fuse(users,{
-          includeScore:true,
-          useExtendedSearch: true,
-          keys: [`${sid}.points`]
-        })
-    
-        const final = sfuse.search(`=${sp}`);
-
-        if (final.length<1){
-          setFiltered([])
+        setFiltered(skillFilter(users));
+      } 
+    }else if(foe!='---Select---'){
+        if(years!=null){
+          final = yearFilter(foeFilter(users))
         }else{
-          setFiltered(final)
+          final = foeFilter(users)
         }
-        return
       }
+    else if(years!=null){
+      final = yearFilter(users);
+    }
+    else{
       enqueueSnackbar("Select a category to filter", {variant:'error'})
+      return;
+    }
+
+
+    if(final ===undefined || final.length<1){
+      enqueueSnackbar("No users Found")
+    }else{
+      setFiltered(final)
+    }
+
     
   
   }
@@ -255,19 +258,6 @@ export default function Filter() {
                         }}
                         >
                         <Grid container spacing={5}>
-                            {/* <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="cid"
-                                label="College ID"
-                                name="cid"
-                                value= {cid}
-                                onChange={(Event) => setCid(Event.target.value)}
-                                autoComplete="cid"
-                                variant="outlined"
-                            />
-                            </Grid> */}
                             <Grid item xs={12}>
                               <TextField
                                 select
@@ -297,6 +287,8 @@ export default function Filter() {
                                 label="Years of Experience"
                                 helperText="Enter the number of years"
                                 value={years}
+                                error={years<0}
+                                helperText={years>=0?"":"Invalid "}
                                 onChange={(Event)=>setYears(Event.target.value)} 
                                 id="exp"
                                 type="number"

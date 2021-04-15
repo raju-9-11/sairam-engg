@@ -40,6 +40,18 @@ export default function ViewAssignedWork() {
                 ...doc.data(),
               })
             }
+            else{
+              if(doc.data().team!=undefined){
+                doc.data().team.forEach((member)=>{
+                  if(member.uid===user.uid){
+                    lst.push({
+                      id:doc.id,
+                      ...doc.data(),
+                    })
+                  }
+                })
+              }
+            }
           })
           setActiveWork(lst)
         })
