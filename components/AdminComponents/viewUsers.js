@@ -59,7 +59,12 @@ export default function ViewUsers(props) {
     const fuse = new Fuse(users,{
       keys: ['cid']
     })
-    setFiltered(fuse.search(search))
+    if(search===''){
+      setFiltered(temp);
+    }
+    else{
+      setFiltered(fuse.search(`^${search}`))
+    }
 
   },[search])
 
@@ -70,16 +75,18 @@ export default function ViewUsers(props) {
       .get()
       .then((response) => {
         var lst =[]
-        response.forEach((user) =>{
-          lst.push(user.data());
+        response.forEach((use) =>{
+          if(use.data().uid!=user.uid){
+            lst.push(use.data());
+          }
         })
         setUsers(lst);
-        lst = lst.filter(val=>val.uid!=user.uid);
         const correctlyShapedArray = lst.map(val => ({
           item: Object.assign(val, {}),
           matches: [],
           score: 1
       }));
+      setFiltered(correctlyShapedArray)
         setTemp(correctlyShapedArray);
       })
   },[])
@@ -108,7 +115,7 @@ export default function ViewUsers(props) {
         </IconButton> */}
       </Paper>
      {filtered.length>0 && <AlignItemsList users = {filtered } />}
-     {search=='' && users.length>0 && <AlignItemsList users = {temp } />}
+     {/* {search=='' && users.length>0 && <AlignItemsList users = {temp } len={} />} */}
     </div>
     </>
   );

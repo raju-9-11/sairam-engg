@@ -20,7 +20,7 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import isDate from 'date-fns/isDate'
+import isValid from 'date-fns/isValid'
 
 
 const useStyles = makeStyles({
@@ -133,7 +133,6 @@ export default function AssignWork(props) {
   const [ teamError, setTeamError ] = useState([]);
   const [ taskNatureError, setTaskNatureError ] = useState('');
   const [ priorityError, setPriorityError ] = useState('');
-  const [ dateError, setDateError ] = useState('');
   const firestore = firebase.firestore();
   const storage = firebase.storage();
 
@@ -200,7 +199,7 @@ export default function AssignWork(props) {
     setPriorityError(taskPriority===null?"Select a priority":"")
     setTaskNatureError(taskNature===null?"Select a item": "")
 
-        if(((lead!=null && team.length>0 && taskNature.id>1 ) || (faculty!=null && taskNature.id<2 ) )&& description.length>5 && checkname(workName)=== "" ){
+        if(isValid(selectedDate) && ((lead!=null && team.length>0 && taskNature.id>1 ) || (faculty!=null && taskNature.id<2 ) )&& description.length>5 && checkname(workName)=== "" ){
 
           let obj = {
             user:self,
@@ -407,6 +406,7 @@ export default function AssignWork(props) {
                 id="date-picker-inline"
                 label="Task Due Date"
                 value={selectedDate}
+                error={!isValid(selectedDate)}
                 minDate={new Date()}
                 onChange={handleDateChange}
                 KeyboardButtonProps={{

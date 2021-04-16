@@ -1,1 +1,0 @@
-_N_E=(window.webpackJsonp_N_E=window.webpackJsonp_N_E||[]).push([[16],{TUfB:function(n,_,w){(window.__NEXT_P=window.__NEXT_P||[]).push(["/dashboard",function(){return w("5Uns")}])}},[["TUfB",0,2,4,6,1,3,5,7,10]]]);

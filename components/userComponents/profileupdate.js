@@ -17,7 +17,7 @@ import { useSnackbar } from 'notistack';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { Button } from '@material-ui/core';
 import { getFields } from '../../lib/db'
-import { checkExp, checkname } from '../../lib/func';
+import { checkCid, checkExp, checkname } from '../../lib/func';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -71,6 +71,7 @@ export default function Profileupdate () {
   const [ expError, setExpError ] = useState('');
   const [ fnameError, setFnameError ] = useState('');
   const [ lnameError, setLnameError ] = useState('');
+  const [ cidError, setCidError ] = useState('');
   // const [ password, setPassword ] = useState('');
   // const [ final, setFinal ] = useState('');
   // const [ foe, setFoe ] = useState('---Select---');
@@ -79,16 +80,18 @@ export default function Profileupdate () {
     setFnameError(checkname(firstName));
     setLnameError(checkname(lastName));
     setExpError(checkExp(years));
+    setCidError(checkCid(cid))
     console.log(years)
-    if(fnameError==='' && lnameError ==='' && expError===''){
+    if(checkname(firstName)==='' && checkname(lastName)==='' && checkExp(years) ==='' && checkCid(cid)===''){
       firestore
         .collection('users')
         .doc(user.uid) 
         .set({
           name:firstName,
-          firstName: firstName,
-          lastName:lastName,
-          experience: years
+          first_name: firstName,
+          last_name:lastName,
+          years: years,
+          cid: cid,
         },{merge:true})
         .then((response) => {
           enqueueSnackbar('User details succesfully updated',{ variant : 'success'})
@@ -137,7 +140,7 @@ export default function Profileupdate () {
             <Grid container justify="center" spacing={spacing}>
               {[0, 1].map((value,index) => (
                 <Grid key={value} item>
-                  <Paper className={classes.paper} >
+                  <Paper elevation={3} className={classes.paper} >
                   {loading &&<LinearProgress />}
 
                     {index==0? (
@@ -205,38 +208,6 @@ export default function Profileupdate () {
                                 variant="outlined"
                             />
                             </Grid>
-                            {/* <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                name="password"
-                                value={password}
-                                onChange={(Event)=> setPassword(Event.target.value)}
-                                label="Current Password"
-                                type="password"
-                                id="password"
-                                variant="outlined"
-                            />
-                            </Grid> 
-                            <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                name="npassword"
-                                value={final}
-                                onChange={(Event) => setFinal(Event.target.value)}
-                                label="New Password"
-                                type="password"
-                                id="npassword"
-                                variant="outlined"
-                            />
-                            </Grid> */}
-                            {/* <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
-                            />
-                            </Grid> */}
                         </Grid>
                         </Box>
                     </Box>
@@ -265,36 +236,18 @@ export default function Profileupdate () {
                               <TextField
                                   autoComplete="cid"
                                   name="collegeId"
-                                  // required
+                                  required
                                   fullWidth
-                                  disabled
                                   id="clgid"
                                   value={cid}
+                                  onChange={(Event)=>setCid(Event.target.value)}
+                                  error={cidError.length>0}
+                                  helperText={cidError}
                                   label="College ID"
                                   autoFocus
                                   variant="outlined"
                               />
                               </Grid>
-                              {/* <Grid item xs={12}>
-                            <TextField
-                              select
-                              fullWidth
-                              label="Field of Study"
-                              value={foe}
-                              onChange={(Event) => setFoe(Event.target.value)}
-                              // helperText="Please select the required field"
-                              variant="outlined"
-                            >
-                               <MenuItem key={1} value={'---Select---'}>
-                                  {'---Select---'}
-                                </MenuItem>
-                              {fields.map((option) => (
-                                <MenuItem key={option.id} value={option.skill}>
-                                  {option.skill}
-                                </MenuItem>
-                              ))}
-                            </TextField>
-                          </Grid> */}
                               <Grid item xs={12}>
                               <TextField
                                   required
@@ -311,12 +264,6 @@ export default function Profileupdate () {
                                   variant="outlined"
                               />
                               </Grid>
-                              {/* <Grid item xs={12}>
-                              <FormControlLabel
-                                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                  label="I want to receive inspiration, marketing promotions and updates via email."
-                              />
-                              </Grid> */}
                           </Grid>
                           </Box>
                           <Button

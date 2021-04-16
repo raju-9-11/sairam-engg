@@ -136,7 +136,6 @@ export default function Filter() {
       keys: [`years`]
     })
 
-    console.log(sfuse.search(`=${years}`))
 
     return sfuse.search(`=${years}`);
 
@@ -175,6 +174,7 @@ export default function Filter() {
 
     if(final ===undefined || final.length<1){
       enqueueSnackbar("No users Found")
+      setFiltered([])
     }else{
       setFiltered(final)
     }
@@ -240,7 +240,7 @@ export default function Filter() {
           <Grid container justify="center" spacing={4}>
             {[0, 1].map((value,index) => (
                 <Grid key={value} item>
-                  <Paper className={classes.paper} > 
+                  <Paper elevation={5} className={classes.paper} > 
                   {index==0?(
                     <Container component="main" maxWidth="sm"   className={classes.root}>
                     <CssBaseline />

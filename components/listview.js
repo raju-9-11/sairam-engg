@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import Pagination from '@material-ui/lab/Pagination';
-import { Box, useMediaQuery } from '@material-ui/core';
+import { Box, Typography, useMediaQuery } from '@material-ui/core';
 import User from './AdminComponents/viewUser'
 
 const useStyles = makeStyles((theme) => ({
@@ -13,6 +13,12 @@ const useStyles = makeStyles((theme) => ({
   },
   inline: {
     display: 'inline',
+  },
+  pages: {
+    display:'flex',
+    flexDirection: 'column',
+    alignSelf:'center',
+    alignContent:'center'
   },
   mail: {
       display:'flex',
@@ -40,6 +46,7 @@ export default function AlignItemsList(props) {
     Math.ceil(props.users.length / itemsPerPage)
   );
 
+
   const handleChange = (event, value) => {
     setPage(value);
   };
@@ -53,26 +60,6 @@ export default function AlignItemsList(props) {
           .map((user,index) => {
               return (
                 <User user ={user} index={index} />
-                  // <div key={index} className={classes.root}>
-                    
-                  //     <ListItem alignItems="flex-start">
-                  //       <ListItemAvatar>
-                  //       <Avatar alt={user.item.first_name} src="/static/images/avatar/1.jpg" />
-                  //       </ListItemAvatar>
-                  //       <ListItemText
-                  //           className={classes.item}
-                  //           primary={user.item.first_name +" "+user.item.last_name}
-                  //           secondary={
-                  //           <React.Fragment>
-                  //           {user.item.cid}
-                  //           </React.Fragment>
-                  //       }
-                  //       />
-                  //       <Typography variant='inherit'>
-                  //           {!hide && user.item.email}
-                  //       </Typography>   
-                  //   </ListItem>
-                  //   </div>
               )
           })}
       </List>
@@ -90,6 +77,9 @@ export default function AlignItemsList(props) {
             classes={{ ul: classes.paginator }}
           />
         </Box>
+        <footer className={classes.pages}>
+          <Typography className={classes.pages} variant="button" display="block" gutterBottom>{(page - 1) * itemsPerPage+1 + " - " +  Math.min(page * itemsPerPage,props.users.length) + " of "+props.users.length + " users"}</Typography>
+        </footer>
     </div>
   );
 }

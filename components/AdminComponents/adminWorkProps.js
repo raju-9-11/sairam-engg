@@ -190,6 +190,7 @@ export default function AdminWorkProps(props) {
                 autoComplete='off'
                 name="workName"
                 required
+                disabled={props.view}
                 fullWidth
                 value={workName}
                 onChange={(Event)=>setWorkName(Event.target.value)}
@@ -205,6 +206,7 @@ export default function AdminWorkProps(props) {
               <TextField
                   name="description"
                   required
+                  disabled={props.view}
                   fullWidth
                   multiline
                   id="description"
@@ -240,7 +242,7 @@ export default function AdminWorkProps(props) {
                 fullWidth
                 format="MM/dd/yyyy"
                 margin="normal"
-                id="date-picker-inline"
+                id="date-picker"
                 label="Created At"
                 value={props.work.createdAt.toDate()}
                 KeyboardButtonProps={{
@@ -278,29 +280,16 @@ export default function AdminWorkProps(props) {
               </Grid>
               <Grid item xs={12} >
               <TextField
-                  name="owner"
+                  name="priority"
                   disabled
                   fullWidth
-                  id="owner"
+                  id="priority"
                   value={props.work.priority}
                   label="Task Priority"
                   autoFocus
                   variant="outlined"
               />
               </Grid>
-              {/* <Grid item xs={12} >
-              <TextField
-                  name="user"
-                  fullWidth
-                  multiline
-                  id="user"
-                  disabled
-                  value={props.work.assigned.first_name +" ("+props.work.assigned.cid+")"}
-                  label="Assigned to"
-                  autoFocus
-                  variant="outlined"
-              />
-              </Grid> */}
 
               {props.work.team!=undefined && props.work.team.length>0 &&
                  <Grid item xs={12}>
@@ -330,7 +319,7 @@ export default function AdminWorkProps(props) {
                 </Grid>
               }
               <Grid item xs={12}>
-                {props.work.files.length>0 &&
+                {!props.view && props.work.files.length>0 &&
                     props.work.files.map((item,index)=>{
                         return(
                             <div className={classes.chip} key={index}>
@@ -343,7 +332,7 @@ export default function AdminWorkProps(props) {
                 }
                 </Grid> 
                 <Grid item xs={12}>
-                {props.work.userFiles.length>0 &&
+                {!props.view && props.work.userFiles.length>0 &&
                     props.work.userFiles.map((item,index)=>{
                         return(
                             <div className={classes.chip} key={index}>
@@ -355,13 +344,13 @@ export default function AdminWorkProps(props) {
                     })
                 }
                 </Grid> 
-                {!props.work.approved &&
+                {!props.view && !props.work.approved && 
                 <Grid item xs={12}>
                 <Button onClick={handleSave} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                     Save Changes
                 </Button>
                 </Grid>}
-                {props.work.completed && !props.work.approved &&
+                {!props.view && props.work.completed && !props.work.approved &&
                 <Grid item xs={12}>
                 <Button 
                     fullWidth

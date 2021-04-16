@@ -143,16 +143,34 @@ function Admin(props) {
         <ListItemIcon>
           <AssessmentIcon />
         </ListItemIcon>
-        <ListItemText primary="Assesment" />
+        <ListItemText primary="Report" />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem button key={6} selected={tab===6} onClick={()=>handleClick(6)} button key={7} className={classes.nested}>
+          <ListItem selected={tab===6} onClick={()=>handleClick(6)} button key={7} className={classes.nested}>
             <ListItemIcon>
               <StarBorder />
             </ListItemIcon>
-            <ListItemText primary="By Date" />
+            <ListItemText primary="Date wise" />
+          </ListItem>
+          <ListItem selected={tab===7} onClick={()=>handleClick(7)} button key={8} className={classes.nested}>
+            <ListItemIcon>
+              <StarBorder />
+            </ListItemIcon>
+            <ListItemText primary="Faculty " />
+          </ListItem>
+          <ListItem selected={tab===8} onClick={()=>handleClick(8)} button key={9} className={classes.nested}>
+            <ListItemIcon>
+              <StarBorder />
+            </ListItemIcon>
+            <ListItemText primary="Completed" />
+          </ListItem>
+          <ListItem selected={tab===9} onClick={()=>handleClick(9)} button key={10} className={classes.nested}>
+            <ListItemIcon>
+              <StarBorder />
+            </ListItemIcon>
+            <ListItemText primary="Pending" />
           </ListItem>
         </List>
       </Collapse>
@@ -220,7 +238,7 @@ function Admin(props) {
             </Hidden>
         </nav>
         <footer className={classes.footer} >
-        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : tab===3? <ViewUsers/>: tab===4? <ViewAssignedWork />: <Report /> }
+        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : tab===3? <ViewUsers/>: tab===4? <ViewAssignedWork />: <Report type={tab-6} /> }
         {/* <Typography
             variant="subtitle1"
             align="center"

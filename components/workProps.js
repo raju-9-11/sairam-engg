@@ -272,7 +272,7 @@ export default function WorkProps(props) {
                 fullWidth
                 format="MM/dd/yyyy"
                 margin="normal"
-                id="date-picker-inline"
+                id="date-picker"
                 label="Due Date"
                 value={props.work.dueDate.toDate()}
                 KeyboardButtonProps={{
