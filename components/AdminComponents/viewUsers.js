@@ -91,6 +91,12 @@ export default function ViewUsers(props) {
       })
   },[])
 
+  const handleSearch = (e) => {
+    if(e.key=="Enter"){
+      e.preventDefault();
+    }
+  }
+
 
   return (
     <>
@@ -100,9 +106,11 @@ export default function ViewUsers(props) {
           <MenuIcon />
         </IconButton> */}
         <InputBase
+          autoFocus
           className={classes.input}
           placeholder="Search users by college id"
           value={search}
+          onKeyDown={handleSearch}
           onChange={(Event) => setSearch(Event.target.value)}
           // inputProps={{ 'aria-label': 'search google maps' }}
         />

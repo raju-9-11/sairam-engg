@@ -43,7 +43,7 @@ export default function DateWise () {
     const firestore = firebase.firestore();
 
 
-    useEffect(() =>{ 
+    const onGet = () => {
         if(isValid(toDate) && isValid(from)){
             firestore
             .collection('work')
@@ -58,13 +58,13 @@ export default function DateWise () {
                 setTasks(lst);
             });
         }
-      },[toDate,from])
+      }
 
     return (
         <>
             <Paper elevation={0} className={classes.topBar}>
             <Grid container spacing={5}>
-                    <Grid item xs={12} sm={6}  >
+                    <Grid item xs={12} sm={4}  >
                     <KeyboardDatePicker
                         disableToolbar
                         inputVariant="outlined"
@@ -81,7 +81,7 @@ export default function DateWise () {
                         }}
                     />
                     </Grid>
-                    <Grid item xs={12} sm={6} >
+                    <Grid item xs={12} sm={4} >
                     <KeyboardDatePicker
                         disableToolbar
                         inputVariant="outlined"
@@ -98,14 +98,15 @@ export default function DateWise () {
                         }}
                     />
                     </Grid>
-                    {/* <Grid item xs ={12} sm={4}>
+                    <Grid item xs ={12} sm={4}>
                         <Button
                             className={classes.button}
                             variant="contained"
+                            onClick={()=>onGet()}
                             fullWidth>
                                 Get Report
                         </Button>
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </Paper>
             <Paper elevation={0} className={classes.list} >

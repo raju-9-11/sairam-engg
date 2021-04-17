@@ -35,6 +35,7 @@ import CreateWork from '../../components/AdminComponents/createWork';
 import ViewAssignedWork from '../../components/AdminComponents/viewAssignedWork';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import Report from '../../components/AdminComponents/report';
+import Head from 'next/head';
 
 
 const drawerWidth = 240;
@@ -85,6 +86,49 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(4),
   },
 }));
+
+const tabs = [
+  {
+    tab:0,
+    name:'Filter'
+  },
+  {
+    tab:1,
+    name:'Manage Skills'
+  },
+  {
+    tab:2,
+    name:'Manage Fields'
+  },
+  {
+    tab:3,
+    name:'View Users'
+  },
+  {
+    tab:4,
+    name:'Active Work'
+  },
+  {
+    tab:5,
+    name:'Assign Work'
+  },
+  {
+    tab:6,
+    name:'Report: By Date'
+  },
+  {
+    tab:7,
+    name:'Report: By Faculty'
+  },
+  {
+    tab:8,
+    name:'Report: Completed'
+  },
+  {
+    tab:9,
+    name:'Report: Pending'
+  }
+]
 
 function Admin(props) {
   const { window } = props;
@@ -190,6 +234,9 @@ function Admin(props) {
      {loading && <SimpleBackdrop/>}
         {user && user.type==1 && 
         <div className={classes.root}>
+          <Head>
+         <title>{tabs[tab].name}</title>
+       </Head>
         <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>
             <IconButton
@@ -202,7 +249,7 @@ function Admin(props) {
                 <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-                {props.name}
+                {tabs[tab].name}
             </Typography>
             </Toolbar>
         </AppBar>

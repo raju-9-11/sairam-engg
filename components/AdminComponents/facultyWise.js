@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         width:'100%'
     },
     button: {
-        marginTop:theme.spacing(3)
+        marginTop:theme.spacing(1)
     }
   }))
   
@@ -58,7 +58,7 @@ export default function FacultyWise () {
           })
       },[])
 
-    useEffect(() =>{ 
+    const onGet = () =>{
         if(isValid(toDate) && isValid(from) && faculty!=null && faculty.uid!=undefined){
             firestore
             .collection('work')
@@ -74,7 +74,7 @@ export default function FacultyWise () {
                 setTasks(lst);
             });
         }
-      },[toDate,from,faculty])
+      }
 
     return (
         <>
@@ -113,7 +113,7 @@ export default function FacultyWise () {
                     />
                     </Grid>
                         {users&&
-                     <Grid item  xs={12} sm={12}>
+                     <Grid item  xs={12} sm={6}>
                         <Autocomplete
                             id="user"
                             required
@@ -124,14 +124,15 @@ export default function FacultyWise () {
                             renderInput={(params) => <TextField {...params} label="Select User" variant="outlined" />}
                             />
                     </Grid>}
-                    {/* <Grid item xs ={12} sm={4}>
+                    <Grid item xs ={12} sm={6}>
                         <Button
+                            onClick={()=>onGet()}
                             className={classes.button}
                             variant="contained"
                             fullWidth>
                                 Get Report
                         </Button>
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </Paper>
             <Paper elevation={0} className={classes.list} >

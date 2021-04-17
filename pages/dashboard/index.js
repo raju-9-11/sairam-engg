@@ -30,6 +30,7 @@ import Custom from '../../components/custom404'
 import WorkIcon from '@material-ui/icons/Work';
 import viewWork from '../../components/viewWork';
 import ViewWork from '../../components/viewWork';
+import Head from 'next/head';
 
 const drawerWidth = 240;
 
@@ -77,6 +78,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+const tabs = [
+  {
+    tab:0,
+    name:'Profile Update'
+  },
+  {
+    tab:1,
+    name:'Skill list'
+  },
+  {
+    tab:2,
+    name:'Field list'
+  },
+  {
+    tab:3,
+    name:'View Work'
+  }
+]
 
 function Dashboard(props) {
   const { window } = props;
@@ -142,6 +162,9 @@ function Dashboard(props) {
     {loading && <SimpleBackdrop/>}
     {user && user.type==0 &&
      <div className={classes.root}>
+       <Head>
+         <title>{tabs[tab].name}</title>
+       </Head>
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>
@@ -155,7 +178,7 @@ function Dashboard(props) {
                 <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-                {props.name}
+                {tabs[tab].name}
             </Typography>
             </Toolbar>
         </AppBar>
