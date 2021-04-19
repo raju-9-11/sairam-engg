@@ -12,6 +12,12 @@ import { checkPassword , checkEmail, checkname, checkCid, checkExp } from '../..
 import { useSnackbar } from 'notistack';
 import { useAuth } from '../../lib/auth'
 import { useRouter } from 'next/router'
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+
 
 
 const useStyles = makeStyles({
@@ -26,6 +32,9 @@ const useStyles = makeStyles({
     padding: '10vh',
     paddingTop: '25vh'
   },
+  dept: {
+    paddingLeft: '2vh'
+  }
 })
 
 export default function Register() {
@@ -48,6 +57,7 @@ export default function Register() {
   const [ lastNameError, setLastNameError ] = useState('');
   const [ expError, setExpError ] = useState('');
   const [ cid, setCid ] = useState('');
+  const [ dept, setDept ] = useState('ece')
 
   const { signupWithEmail ,signout } = useAuth();
 
@@ -64,7 +74,7 @@ export default function Register() {
       if(val.length>1){
         return;
       }
-        signupWithEmail(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD, firstName, 0, lastName, cid , years);
+        signupWithEmail(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD, firstName, 0, lastName, cid , years, dept);
         setEmail('')
     
   }
@@ -163,6 +173,53 @@ export default function Register() {
                   variant="outlined"
               />
               </Grid>
+               <Grid item xs={12}>
+              <FormControl  component="fieldset">
+              <FormLabel component="legend">Department</FormLabel>
+              <RadioGroup value={dept} onChange={(Event)=>setDept(Event.target.value)} row aria-label="position" name="position" defaultValue="top">
+                <FormControlLabel
+                  value="ece"
+                  control={<Radio color="primary" />}
+                  label="ECE"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  value="cse"
+                  control={<Radio color="primary" />}
+                  label="CSE"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  value="eee"
+                  control={<Radio color="primary" />}
+                  label="EEE"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  value="ei"
+                  control={<Radio color="primary" />}
+                  label="EI"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  value="me"
+                  control={<Radio color="primary" />}
+                  label="ME"
+                  labelPlacement="start"
+                />
+                <FormControlLabel 
+                  value="it" 
+                  control={<Radio color="primary" />} 
+                  label="IT"
+                  labelPlacement="start" />
+                <FormControlLabel 
+                  value="prod" 
+                  control={<Radio color="primary" />} 
+                  label="Prod"
+                  labelPlacement="start" />
+              </RadioGroup>
+            </FormControl>
+            </Grid>
             {/* <Grid item xs={12}>
               <TextField
                 required

@@ -25,9 +25,7 @@ export default function Custom() {
     </Head>
     <h1>404 - Page Not Found</h1>
     <Button href="/">
-      <a>
         Go back home
-      </a>
     </Button>
   </div>
   )

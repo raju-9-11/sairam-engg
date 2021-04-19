@@ -4,6 +4,7 @@ import CurrentWork from '../currentWork'
 import data from '../../pages/api/mock.json'
 import { useAuth } from '../../lib/auth';
 import firebase from '../../lib/firebase'
+import { getFormattedWork } from '../../lib/db';
 
 const useStyles = makeStyles((theme) => ({
   nowork: {
@@ -28,23 +29,25 @@ export default function ViewAssignedWork() {
   const firestore = firebase.firestore();
 
   useEffect(()=>{
-    if(user){
-      firestore
-        .collection('work')
-        .onSnapshot((response) => {
-          let lst = []
-          response.docs.map((doc)=>{
-            if(doc.data().user.uid===user.uid){              
-              lst.push({
-                id:doc.id,
-                ...doc.data(),
-              })
+    async function getData(){
+      if(user){
+        firestore
+          .collection('work')
+          .onSnapshot(async (response) => {
+            let lst = []
+            for(const doc of response.docs ){
+              if(doc.data().user===user.uid ){
+                const currWork = await getFormattedWork(doc.data(),doc.id);
+                lst.push(currWork)
+              }
             }
-          })
-          setActiveWork(lst)
+            setActiveWork(lst)
+          
         })
-        
+      }
     }
+
+    getData();
   },[user])
 
   return (

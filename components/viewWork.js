@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CurrentWork from './currentWork'
 import firebase from '../lib/firebase'
 import { useAuth } from '../lib/auth';
+import { getFormattedWork, getUserDetails } from '../lib/db';
 
 const useStyles = makeStyles((theme) => ({
   nowork: {
@@ -28,35 +29,26 @@ export default function ViewAssignedWork() {
   const firestore = firebase.firestore();
 
   React.useEffect(()=>{
-    if(user){
-      firestore
-        .collection('work')
-        .onSnapshot((response) => {
-          let lst = []
-          response.docs.map((doc)=>{
-            if(doc.data().assigned.uid===user.uid){
-              lst.push({
-                id:doc.id,
-                ...doc.data(),
-              })
-            }
-            else{
-              if(doc.data().team!=undefined){
-                doc.data().team.forEach((member)=>{
-                  if(member.uid===user.uid){
-                    lst.push({
-                      id:doc.id,
-                      ...doc.data(),
-                    })
-                  }
-                })
+    async function getData(){
+      if(user){
+        firestore
+          .collection('work')
+          .onSnapshot(async (response) => {
+            let lst = []
+            for(const doc of response.docs ){
+              if(doc.data().assigned===user.uid || ( doc.data().team!=undefined && doc.data().team.includes(user.uid) )){
+                const currWork = await getFormattedWork(doc.data(),doc.id);
+                lst.push(currWork)
               }
             }
-          })
-          setActiveWork(lst)
+            setActiveWork(lst)
+          
         })
-        
+      }
     }
+
+    getData();
+
   },[user])
 
   return (

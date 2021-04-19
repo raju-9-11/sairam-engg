@@ -82,19 +82,27 @@ const useStyles = makeStyles((theme) => ({
 const tabs = [
   {
     tab:0,
-    name:'Profile Update'
+    name:'Profile Update',
+    elem:  <ProfileUpdate />,
+    icon: <PersonIcon />,
   },
   {
     tab:1,
-    name:'Skill list'
+    name:'Skill list',
+    elem: <Skillset />,
+    icon: <BookIcon />,
   },
   {
     tab:2,
-    name:'Field list'
+    name:'Field list',
+    elem:  <Foe/>,
+    icon: <RecentActorsIcon />,
   },
   {
     tab:3,
-    name:'View Work'
+    name:'View Work',
+    elem: <ViewWork />,
+    icon:  <WorkIcon />
   }
 ]
 
@@ -114,18 +122,7 @@ function Dashboard(props) {
   const router = useRouter();
 
   const handleClick = (index) => {
-    if(index===0){
-      setTab(0);
-    }
-    if(index===1){
-      setTab(1);
-    }
-    if(index===2){
-      setTab(2);
-    }
-    if(index===3){
-      setTab(3);
-    }
+    setTab(index)
     setMobileOpen(false);
   }
  
@@ -134,16 +131,20 @@ function Dashboard(props) {
       <div className={classes.toolbar} />
       <Divider />
       <List>
-        {['Profile Update', 'Skill Set', 'Field of Expertise'].map((text, index) => (
-          <ListItem selected = {tab===index} button key={text}  onClick={()=>handleClick(index)}>
-            <ListItemIcon>{index  === 0 ? <PersonIcon /> : index === 1 ? <BookIcon />: <RecentActorsIcon /> }</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+      {tabs.slice(0,3).map((item,index) => {
+          return(
+            <ListItem selected={tab==item.tab} button key={item.tab} onClick={()=>handleClick(item.tab)}>
+              <ListItemIcon >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItem>
+          )
+        })}
       </List>
       <Divider />
       <ListItem  selected={tab===3} button key={5} onClick={()=>handleClick(3)}>
-        <ListItemIcon> <WorkIcon /> </ListItemIcon>
+        <ListItemIcon> {tabs[3].icon} </ListItemIcon>
         <ListItemText primary={`View Work`}  />
     </ListItem>
       <Divider />
@@ -214,7 +215,7 @@ function Dashboard(props) {
             </Hidden>
         </nav>
         <footer className={classes.footer} >
-        {tab===0? <ProfileUpdate /> : tab===1? <Skillset /> : tab===2? <Foe/>: <ViewWork />}
+          {tabs[tab].elem}
         {/* <Typography
             variant="subtitle1"
             align="center"
@@ -226,7 +227,7 @@ function Dashboard(props) {
           <Copyright /> */}
         </footer>
         </div>}
-        {(!user && !loading)||(user && user.type==1) && <Custom />}
+        {((!loading && !user) || (user && user.type!=0)) && <Custom />}
         </>
   );
 }

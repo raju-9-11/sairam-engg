@@ -21,6 +21,8 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import isValid from 'date-fns/isValid'
+import { priority , nature, typeList } from '../../lib/var'
+import { getUserDetails, getUsers } from '../../lib/db';
 
 
 const useStyles = makeStyles({
@@ -50,66 +52,17 @@ const useStyles = makeStyles({
   }
 })
 
-const types = [
-    {
-        type:0,
-        name:'ECE Faculty'
-    },
-    // {
-    //     type:1,
-    //     name:''
-    // }
-];
 
-
-const nature = [
-  {
-      id:0,
-      name:'Individual Task'
-  },
-  {
-      id:1,
-      name:'Individual Responsibility'
-  },
-  {
-    id:2,
-    name:'Team Work'
-},
-{
-  id:3,
-  name:'Team Responsibility'
-},
-
-];
-
-const priority = [
-  {
-      id:0,
-      name:'Important'
-  },
-  {
-      id:1,
-      name:'Very Important'
-  },
-  {
-    id:2,
-    name:'Urgent'
-},
-{
-  id:3,
-  name:'Very Urgent'
-},
-
-];
 
 
 export default function AssignWork(props) {
-
+  
   const { className, ...other } = props;
-
-  const { user , type } = useAuth();
+  
+  const { user } = useAuth();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const types = typeList[user.type-1]
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [  workName, setWorkName ] = useState('');
@@ -149,18 +102,14 @@ export default function AssignWork(props) {
 
 
   useEffect(() =>{ 
-    firestore
-      .collection('users')
-      .get()
-      .then((response) => {
+      async function getData () {
+        const data = await getUsers();
+        const currUser = await getUserDetails(user.uid);
+        setSelf({...currUser.data()})
         var lst =[]
-        response.forEach((use) =>{
-          if(use.id===user.uid){
-            setSelf({...use.data()})
-          }else{
-            lst.push(use.data());
-          }
-        })
+        for(const doc of data.docs){
+            lst.push(doc.data());
+        }
         setTemp(lst);
         const correctlyShapedArray = lst.map(val => ({
             item: Object.assign(val, {}),
@@ -168,7 +117,9 @@ export default function AssignWork(props) {
             score: 1
         }));
           setUsers(correctlyShapedArray);
-      })
+      }
+      getData();
+
   },[])
 
   const handleDateChange = (date) => {
@@ -202,7 +153,7 @@ export default function AssignWork(props) {
         if(isValid(selectedDate) && ((lead!=null && team.length>0 && taskNature.id>1 ) || (faculty!=null && taskNature.id<2 ) )&& description.length>5 && checkname(workName)=== "" ){
 
           let obj = {
-            user:self,
+            user:self.uid,
             name:workName,
             description: description,
             completed:false,
@@ -214,16 +165,19 @@ export default function AssignWork(props) {
             nature: taskNature.name,
             createdAt: new Date(),
             dueDate: selectedDate,
-            approved:false
+            approved:false,
+            owner_type: self.type
           }
 
 
             if(taskNature.id<2){
-              obj.assigned = faculty.item;
+              obj.assigned = faculty.item.uid;
             }else{
-              obj.assigned = lead.item;
-              obj.team = team;
+              obj.assigned = lead.item.uid;
+              obj.team = team.map((val)=>val.uid);
             }
+
+
 
           firestore
             .collection('work')
@@ -245,7 +199,6 @@ export default function AssignWork(props) {
                                 links: firebase.firestore.FieldValue.arrayUnion(url)
                               })
                           })
-                        // enqueueSnackbar("success")
                       })
                       .catch((err)=>{
                         enqueueSnackbar('Error Uploading Files Try again',{variant:'error'})

@@ -223,10 +223,10 @@ export default function AdminWorkProps(props) {
 
               <Grid item xs={12}>
                   <TextField
-                      name="lead"
+                      name="user"
                       fullWidth
                       disabled
-                      id="lead"
+                      id="user"
                       value={props.work.assigned.first_name+" ("+props.work.assigned.cid+")"}
                       label={"Assigned to" }
                       autoFocus

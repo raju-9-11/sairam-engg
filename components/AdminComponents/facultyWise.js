@@ -6,6 +6,7 @@ import Work from "./filterWork";
 import compareAsc from 'date-fns/compareAsc'
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import isValid from "date-fns/isValid";
+import { getByFaculty, getFormattedWork, getUsers } from "../../lib/db";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,33 +47,28 @@ export default function FacultyWise () {
     const [ faculty, setFaculty ] = useState(null);
 
     useEffect(() =>{ 
-        firestore
-          .collection('users')
-          .get()
-          .then((response) => {
+        async function getData (){
+            const data = await getUsers();
             var lst =[]
-            response.forEach((use) =>{
-            lst.push(use.data());
-            })
-            setUsers(lst);
-          })
+            for(const doc of data.docs) {
+                lst.push({id:doc.id,...doc.data()})
+            }
+            setUsers(lst)
+        }
+        getData();
       },[])
 
-    const onGet = () =>{
+    const onGet = async () =>{
         if(isValid(toDate) && isValid(from) && faculty!=null && faculty.uid!=undefined){
-            firestore
-            .collection('work')
-            .where('createdAt','<=',toDate)
-            .where('createdAt','>=',from)
-            .where('assigned.uid','==',faculty.uid)
-            .get()
-            .then((response) => {
-                var lst =[]
-                response.forEach((work) =>{
-                lst.push(work.data());
-                })
-                setTasks(lst);
-            });
+            const data = await getByFaculty(toDate, from)
+            var lst = []
+            for(const doc of data.docs){
+                if(doc.data().assigned==faculty.uid ||  ( doc.data().team!=undefined && doc.data().team.includes(faculty.uid))){
+                    const currWork = await getFormattedWork(doc.data());
+                    lst.push(currWork)
+                }
+            }
+            setTasks(lst)
         }
       }
 

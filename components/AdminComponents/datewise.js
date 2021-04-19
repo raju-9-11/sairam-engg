@@ -5,6 +5,7 @@ import firebase from '../../lib/firebase'
 import Work from "./filterWork";
 import compareAsc from 'date-fns/compareAsc'
 import isValid from "date-fns/isValid";
+import { getByFaculty, getFormattedWork } from "../../lib/db";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,23 +41,17 @@ export default function DateWise () {
     const [ from, setFrom ] = useState(new Date())
     const [ toDate, setToDate ] = useState(new Date());
     const [ tasks, setTasks ] = useState([]);
-    const firestore = firebase.firestore();
 
 
-    const onGet = () => {
+    const onGet = async () => {
         if(isValid(toDate) && isValid(from)){
-            firestore
-            .collection('work')
-            .where('createdAt','<=',toDate)
-            .where('createdAt','>=',from)
-            .get()
-            .then((response) => {
-                var lst =[]
-                response.forEach((work) =>{
-                lst.push(work.data());
-                })
-                setTasks(lst);
-            });
+            const data = await getByFaculty(toDate, from)
+            var lst = []
+            for(const doc of data.docs){
+                const currWork = await getFormattedWork(doc.data());
+                lst.push(currWork)
+            }
+            setTasks(lst)
         }
       }
 
@@ -112,7 +107,7 @@ export default function DateWise () {
             <Paper elevation={0} className={classes.list} >
                 {tasks.map((item,index)=> {
                     return(
-                        <Work work={item} index={index} />
+                        <Work key={index+item.id} work={item} index={index} />
                     )
                 })
                 }

@@ -81,7 +81,6 @@ export default function Profileupdate () {
     setLnameError(checkname(lastName));
     setExpError(checkExp(years));
     setCidError(checkCid(cid))
-    console.log(years)
     if(checkname(firstName)==='' && checkname(lastName)==='' && checkExp(years) ==='' && checkCid(cid)===''){
       firestore
         .collection('users')
@@ -261,6 +260,17 @@ export default function Profileupdate () {
                                   onChange={(Event) => setYears(Event.target.value)}
                                   type="number"
                                   autoComplete="exp"
+                                  variant="outlined"
+                              />
+                              </Grid>
+                              <Grid item xs={12}>
+                              <TextField
+                                  fullWidth
+                                  name="dept"
+                                  label="Department"
+                                  id="dept"
+                                  disabled
+                                  value={user.dept.toUpperCase()}
                                   variant="outlined"
                               />
                               </Grid>

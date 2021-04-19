@@ -1,11 +1,12 @@
 import { Button, Container , Grid, makeStyles, Paper, TextField, Typography} from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import firebase from '../../lib/firebase'
 import Work from "./filterWork";
 import compareAsc from 'date-fns/compareAsc'
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import isValid from "date-fns/isValid";
+import { getApproved, getFormattedWork } from "../../lib/db";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -43,18 +44,20 @@ export default function Completed () {
     const [ faculty, setFaculty ] = useState(null);
 
     useEffect(() =>{ 
-        firestore
-        .collection('work')
-        .where('approved','==',true)
-        .get()
-        .then((response) => {
-            var lst =[]
-            response.forEach((work) =>{
-            lst.push(work.data());
-            })
-            setTasks(lst);
-        });
-      },[])
+
+        async function getData() {
+            const data = await getApproved()
+            var lst= []
+            for(const doc of data.docs){
+                const currWork = await getFormattedWork(doc.data(),doc.id);
+                lst.push(currWork)
+            }
+            setTasks(lst)
+        }
+
+        getData();
+
+    },[])
 
     return (
             <Paper elevation={0} className={classes.list} >

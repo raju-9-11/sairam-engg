@@ -6,6 +6,7 @@ import Work from "./filterWork";
 import compareAsc from 'date-fns/compareAsc'
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import isValid from "date-fns/isValid";
+import { getFormattedWork, getPending } from "../../lib/db";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -43,18 +44,17 @@ export default function Pending () {
     const [ faculty, setFaculty ] = useState(null);
 
     useEffect(() =>{ 
-        firestore
-        .collection('work')
-        .where('approved','==',false)
-        .orderBy('completed',"desc")
-        .get()
-        .then((response) => {
-            var lst =[]
-            response.forEach((work) =>{
-            lst.push(work.data());
-            })
-            setTasks(lst);
-        });
+        async function getData() {
+            const data = await getPending();
+            var lst=[]
+            for(const doc of data.docs){
+                const currWork = await getFormattedWork(doc.data(),doc.id);
+                lst.push(currWork)
+            }
+            setTasks(lst)
+        }
+
+        getData();
       },[])
 
     return (

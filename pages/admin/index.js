@@ -27,7 +27,7 @@ import StarBorder from '@material-ui/icons/StarBorder';
 import { useAuth } from '../../lib/auth'
 import Filter from '../../components/AdminComponents/filter';
 import ViewUsers from '../../components/AdminComponents/viewUsers';
-import Copyright from '../../components/Copyright';
+import ViewWork from '../../components/viewWork';
 import SimpleBackdrop from '../../components/backDrop';
 import Custom from '../../components/custom404'
 import WorkIcon from '@material-ui/icons/Work';
@@ -36,6 +36,10 @@ import ViewAssignedWork from '../../components/AdminComponents/viewAssignedWork'
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import Report from '../../components/AdminComponents/report';
 import Head from 'next/head';
+import Profileupdate from '../../components/userComponents/profileupdate';
+import Skillset from '../../components/userComponents/skillset';
+import Foe from '../../components/userComponents/foe';
+import HomeWorkIcon from '@material-ui/icons/HomeWork';
 
 
 const drawerWidth = 240;
@@ -90,43 +94,85 @@ const useStyles = makeStyles((theme) => ({
 const tabs = [
   {
     tab:0,
-    name:'Filter'
+    name:'Filter',
+    elem:<Filter />,
+    icon:<PersonIcon />
   },
   {
     tab:1,
-    name:'Manage Skills'
+    name:'Manage Skills',
+    elem:<ManageSkills />,
+    icon:<BookIcon />
   },
   {
     tab:2,
-    name:'Manage Fields'
+    name:'Manage Fields',
+    elem:<ManageFields />,
+    icon:<RecentActorsIcon />
   },
   {
     tab:3,
-    name:'View Users'
+    name:'View Users',
+    elem:<ViewUsers />,
+    icon:<GroupIcon /> 
   },
   {
     tab:4,
-    name:'Active Work'
+    name:'Active Work',
+    elem:<ViewAssignedWork />,
+    icon: <HomeWorkIcon />
   },
   {
     tab:5,
-    name:'Assign Work'
+    name:'Assign Work',
   },
   {
     tab:6,
-    name:'Report: By Date'
+    name:'DateWise',
+    elem:<Report type={0} />,
+    icon:<StarBorder />
   },
   {
     tab:7,
-    name:'Report: By Faculty'
+    name:'FacultyWise',
+    elem:<Report type={1} />,
+    icon:<StarBorder />
   },
   {
     tab:8,
-    name:'Report: Completed'
+    name:'Completed',
+    elem:<Report type={2} />,
+    icon:<StarBorder />
   },
   {
     tab:9,
-    name:'Report: Pending'
+    name:'Pending',
+    elem:<Report type={3} />,
+    icon:<StarBorder />
+  },
+  {
+    tab:10,
+    name:'Profile Update',
+    elem:  <Profileupdate />,
+    icon: <PersonIcon />,
+  },
+  {
+    tab:11,
+    name:'Skill list',
+    elem: <Skillset />,
+    icon: <BookIcon />,
+  },
+  {
+    tab:12,
+    name:'Field list',
+    elem:  <Foe/>,
+    icon: <RecentActorsIcon />,
+  },
+  {
+    tab:13,
+    name:'My Work',
+    elem: <ViewWork />,
+    icon:  <WorkIcon />
   }
 ]
 
@@ -161,26 +207,36 @@ function Admin(props) {
     <div>
       <div className={classes.toolbar} />
       <Divider />
-      <List>
-        {['Filter ', 'Manage Skills', 'Manage Fields','View Users'].map((text, index) => (
-          <ListItem selected={tab===index} button key={index} onClick={()=>handleClick(index)}>
-            <ListItemIcon>
-              {index  === 0 ?
-               <PersonIcon />
-                : index === 1 ? 
-                <BookIcon />
-                : index==2? 
-                <RecentActorsIcon />
-                 :<GroupIcon /> 
-                 }</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+      {tabs.slice(10,13).map((item,index) => {
+          return(
+            <ListItem selected={tab==item.tab} button key={item.tab} onClick={()=>handleClick(item.tab)}>
+              <ListItemIcon >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItem>
+          )
+        })}
       <Divider />
+      <List>
+        {tabs.slice(0,4).map((item,index) => {
+          return(
+            <ListItem selected={tab==item.tab} button key={item.tab} onClick={()=>handleClick(item.tab)}>
+              <ListItemIcon >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItem>
+          )
+        })}
+      <Divider />
+       <ListItem  selected={tab===13} button key={13} onClick={()=>handleClick(13)}>
+        <ListItemIcon> {tabs[13].icon} </ListItemIcon>
+        <ListItemText primary={tabs[13].name}  />
+    </ListItem>
       <ListItem selected={tab===4} onClick={()=>handleClick(4)} button key={5}>
-        <ListItemIcon> <WorkIcon /> </ListItemIcon>
-        <ListItemText primary={`Active work`}  />
+        <ListItemIcon> {tabs[4].icon} </ListItemIcon>
+        <ListItemText primary={tabs[4].name}  />
       </ListItem>
         <CreateWork />
         <ListItem button onClick={handleSetClick}>
@@ -192,30 +248,16 @@ function Admin(props) {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem selected={tab===6} onClick={()=>handleClick(6)} button key={7} className={classes.nested}>
-            <ListItemIcon>
-              <StarBorder />
-            </ListItemIcon>
-            <ListItemText primary="Date wise" />
-          </ListItem>
-          <ListItem selected={tab===7} onClick={()=>handleClick(7)} button key={8} className={classes.nested}>
-            <ListItemIcon>
-              <StarBorder />
-            </ListItemIcon>
-            <ListItemText primary="Faculty " />
-          </ListItem>
-          <ListItem selected={tab===8} onClick={()=>handleClick(8)} button key={9} className={classes.nested}>
-            <ListItemIcon>
-              <StarBorder />
-            </ListItemIcon>
-            <ListItemText primary="Completed" />
-          </ListItem>
-          <ListItem selected={tab===9} onClick={()=>handleClick(9)} button key={10} className={classes.nested}>
-            <ListItemIcon>
-              <StarBorder />
-            </ListItemIcon>
-            <ListItemText primary="Pending" />
-          </ListItem>
+        {tabs.slice(6,10).map((item,index) => {
+          return(
+            <ListItem className={classes.nested} selected={tab==item.tab} button key={item.tab} onClick={()=>handleClick(item.tab)}>
+              <ListItemIcon >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItem>
+          )
+        })}
         </List>
       </Collapse>
       <Divider />
@@ -223,6 +265,7 @@ function Admin(props) {
         <ListItemIcon> <ExitToAppIcon /> </ListItemIcon>
         <ListItemText primary={`Logout`}  />
     </ListItem>
+    </List>
     </div>
   );
 
@@ -254,7 +297,6 @@ function Admin(props) {
             </Toolbar>
         </AppBar>
         <nav className={classes.drawer} aria-label="mailbox folders">
-            {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
             <Hidden smUp implementation="css">
             <Drawer
                 container={container}
@@ -266,7 +308,7 @@ function Admin(props) {
                 paper: classes.drawerPaper,
                 }}
                 ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
+                keepMounted: true, 
                 }}
             >
                 {drawer}
@@ -285,19 +327,10 @@ function Admin(props) {
             </Hidden>
         </nav>
         <footer className={classes.footer} >
-        {tab===0? <Filter /> : tab===1? <ManageSkills/> : tab===2? <ManageFields/> : tab===3? <ViewUsers/>: tab===4? <ViewAssignedWork />: <Report type={tab-6} /> }
-        {/* <Typography
-            variant="subtitle1"
-            align="center"
-            color="textSecondary"
-            component="p"
-          >
-            This Website was developed by
-          </Typography>
-          <Copyright /> */}
+          {tabs[tab].elem}
         </footer>
         </div>}
-        {(!user && !loading)||(user && user.type==0) && <Custom />}
+        {((!loading && !user) || (user && user.type!=1)) && <Custom />}
         </>
   );
 }

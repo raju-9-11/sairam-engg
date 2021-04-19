@@ -9,6 +9,7 @@ import AlignItemsList from '../listview';
 import firebase from '../../lib/firebase'
 import Fuse from 'fuse.js'
 import { useAuth } from '../../lib/auth';
+import { getUsers } from '../../lib/db';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,7 +58,7 @@ export default function ViewUsers(props) {
   
   useEffect(() => {
     const fuse = new Fuse(users,{
-      keys: ['cid']
+      keys: ['cid','first_name','last_name']
     })
     if(search===''){
       setFiltered(temp);
@@ -70,25 +71,26 @@ export default function ViewUsers(props) {
 
   
   useEffect(() =>{ 
-    firestore
-      .collection('users')
-      .get()
-      .then((response) => {
-        var lst =[]
-        response.forEach((use) =>{
-          if(use.data().uid!=user.uid){
-            lst.push(use.data());
-          }
-        })
-        setUsers(lst);
-        const correctlyShapedArray = lst.map(val => ({
-          item: Object.assign(val, {}),
-          matches: [],
-          score: 1
-      }));
-      setFiltered(correctlyShapedArray)
-        setTemp(correctlyShapedArray);
-      })
+   const getData = async() => {
+     const data = await getUsers();
+     var lst =[]
+     for(const doc of data.docs){
+       if(doc.data().uid!=user.uid){
+         lst.push(doc.data());
+       }
+     }
+     setUsers(lst);
+     const correctlyShapedArray = lst.map(val => ({
+       item: Object.assign(val, {}),
+       matches: [],
+       score: 1
+   }));
+   setFiltered(correctlyShapedArray)
+     setTemp(correctlyShapedArray);
+   }
+
+   getData();
+
   },[])
 
   const handleSearch = (e) => {
@@ -108,7 +110,7 @@ export default function ViewUsers(props) {
         <InputBase
           autoFocus
           className={classes.input}
-          placeholder="Search users by college id"
+          placeholder="Search users by college id, or name"
           value={search}
           onKeyDown={handleSearch}
           onChange={(Event) => setSearch(Event.target.value)}
