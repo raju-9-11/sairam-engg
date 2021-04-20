@@ -40,6 +40,7 @@ import Profileupdate from '../../components/userComponents/profileupdate';
 import Skillset from '../../components/userComponents/skillset';
 import Foe from '../../components/userComponents/foe';
 import HomeWorkIcon from '@material-ui/icons/HomeWork';
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 
 const drawerWidth = 240;
@@ -73,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
+  // toolbar: theme.mixins.toolbar,
   drawerPaper: {
     width: drawerWidth,
   },
@@ -311,6 +312,11 @@ function Admin(props) {
                 keepMounted: true, 
                 }}
             >
+              <IconButton disabled>
+              <img src="/SEC-LOGO.png" />
+              <Typography variant="h6" noWrap>
+            </Typography>
+               </IconButton>
                 {drawer}
             </Drawer>
             </Hidden>
@@ -322,6 +328,9 @@ function Admin(props) {
                 variant="permanent"
                 open
             >
+               <IconButton disabled>
+               <img src="/SEC-LOGO.png" />
+               </IconButton>
                 {drawer}
             </Drawer>
             </Hidden>

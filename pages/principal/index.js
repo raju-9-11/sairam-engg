@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
+  // toolbar: theme.mixins.toolbar,
   drawerPaper: {
     width: drawerWidth,
   },
@@ -268,6 +268,9 @@ function Principal(props) {
                 keepMounted: true, 
                 }}
             >
+               <IconButton disabled>
+               <img src="/SEC-LOGO.png" />
+               </IconButton>
                 {drawer}
             </Drawer>
             </Hidden>
@@ -279,6 +282,9 @@ function Principal(props) {
                 variant="permanent"
                 open
             >
+               <IconButton disabled>
+               <img src="/SEC-LOGO.png" />
+               </IconButton>
                 {drawer}
             </Drawer>
             </Hidden>
