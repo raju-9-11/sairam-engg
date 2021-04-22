@@ -49,6 +49,17 @@ import { AccountCircle, ArrowDownward } from '@material-ui/icons';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
+  '@global': {
+    '*::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '*::-webkit-scrollbar-track': {
+      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '*::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+    }
+  },
   root: { 
     paddingTop:'3vw',
     display: 'flex',
@@ -283,7 +294,7 @@ function Admin(props) {
   return (
     <>
      {loading && <SimpleBackdrop/>}
-        {user && user.type==1 && 
+        {user && user.type==3 && 
         <div className={classes.root}>
           <Head>
          <title>{tabs[tab].name}</title>
@@ -361,7 +372,7 @@ function Admin(props) {
           {tabs[tab].elem}
         </div>
         </div>}
-        {((!loading && !user) || (user && user.type!=1)) && <Custom />}
+        {((!loading && !user) || (user && user.type!=3)) && <Custom />}
         <StickyFooter />
         </>
   );

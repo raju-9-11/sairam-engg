@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CurrentWork from '../currentWork'
-import data from '../../pages/api/mock.json'
 import { useAuth } from '../../lib/auth';
 import firebase from '../../lib/firebase'
 import { getFormattedWork } from '../../lib/db';

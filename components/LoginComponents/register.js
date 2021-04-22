@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Copyright from '../../components/Copyright';
-import { makeStyles } from '@material-ui/core';
+import { Checkbox, makeStyles, Switch } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { checkPassword , checkEmail, checkname, checkCid, checkExp } from '../../lib/func'
 import { useSnackbar } from 'notistack';
@@ -17,6 +17,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import { depts, officedepts } from '../../lib/var'
 
 
 
@@ -58,6 +59,9 @@ export default function Register() {
   const [ expError, setExpError ] = useState('');
   const [ cid, setCid ] = useState('');
   const [ dept, setDept ] = useState('ece')
+  const [ office, setOffice ] = useState(false)
+  const [ userType, setUserType ] = useState(1);
+  const [ role , setRole ] = useState(null);
 
   const { signupWithEmail ,signout } = useAuth();
 
@@ -74,7 +78,12 @@ export default function Register() {
       if(val.length>1){
         return;
       }
-        signupWithEmail(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD, firstName, 0, lastName, cid , years, dept);
+      if(!office){
+        signupWithEmail(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD, firstName, 0, lastName, cid , years, dept );
+      }
+      else{
+        signupWithEmail(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD, firstName, userType, lastName, cid , years, null );
+      }
         setEmail('')
     
   }
@@ -173,53 +182,63 @@ export default function Register() {
                   variant="outlined"
               />
               </Grid>
+               {!office && 
                <Grid item xs={12}>
-              <FormControl  component="fieldset">
+              <FormControl disabled={office}  component="fieldset">
               <FormLabel component="legend">Department</FormLabel>
-              <RadioGroup value={dept} onChange={(Event)=>setDept(Event.target.value)} row aria-label="position" name="position" defaultValue="top">
-                <FormControlLabel
-                  value="ece"
-                  control={<Radio color="primary" />}
-                  label="ECE"
-                  labelPlacement="start"
-                />
-                <FormControlLabel
-                  value="cse"
-                  control={<Radio color="primary" />}
-                  label="CSE"
-                  labelPlacement="start"
-                />
-                <FormControlLabel
-                  value="eee"
-                  control={<Radio color="primary" />}
-                  label="EEE"
-                  labelPlacement="start"
-                />
-                <FormControlLabel
-                  value="ei"
-                  control={<Radio color="primary" />}
-                  label="EI"
-                  labelPlacement="start"
-                />
-                <FormControlLabel
-                  value="me"
-                  control={<Radio color="primary" />}
-                  label="ME"
-                  labelPlacement="start"
-                />
-                <FormControlLabel 
-                  value="it" 
-                  control={<Radio color="primary" />} 
-                  label="IT"
-                  labelPlacement="start" />
-                <FormControlLabel 
-                  value="prod" 
-                  control={<Radio color="primary" />} 
-                  label="Prod"
-                  labelPlacement="start" />
+              <RadioGroup  value={dept} onChange={(Event)=>setDept(Event.target.value)} row aria-label="position" name="position" defaultValue="top">
+                {depts.map((dep,index)=>{
+                  return (  
+                  <FormControlLabel
+                      key={index}
+                      value={dep.value}
+                      control={<Radio color="primary" />}
+                      label={dep.label}
+                      labelPlacement="start"
+                    />)
+                  })
+                }
+              </RadioGroup>
+            </FormControl>
+            </Grid>}
+            <Grid item xs={12}>
+              <FormControlLabel
+                checked={office}
+                onChange={()=>{
+                  setOffice(!office)
+                  if(office==false){
+                    setDept(null);
+                    setRole('dean')
+                  }else{
+                    setDept('ece');
+                    setRole(null)
+                  }
+                }}
+                control={<Switch color="primary" />}
+                label="Admin / Office"
+              />
+            </Grid>
+            {office &&
+              <Grid item xs={12}>
+              <FormControl  component="fieldset">
+              <FormLabel component="legend">Role</FormLabel>
+              <RadioGroup  value={role} onChange={(Event)=>setRole(Event.target.value)} row aria-label="position" name="position" defaultValue="top">
+                {officedepts.map((dep,index)=>{
+                  return (  
+                  <FormControlLabel
+                      key={index}
+                      value={dep.value}
+                      onClick={()=>setUserType(dep.type)}
+                      control={<Radio color="primary" />}
+                      label={dep.label}
+                      labelPlacement="start"
+                    />)
+                  })
+                }
               </RadioGroup>
             </FormControl>
             </Grid>
+            }
             {/* <Grid item xs={12}>
               <TextField
                 required
@@ -250,12 +269,7 @@ export default function Register() {
                 variant="outlined"
               />
             </Grid> */}
-            {/* <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
-            </Grid> */}
+           
           </Grid>
           <Button onClick={handleSignUp} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className={classes.button}>
             Create Account

@@ -29,7 +29,7 @@ export default function StickyFooter() {
     <div className={classes.fooroot}>
       <footer className={classes.footer}>
         <Container maxWidth="sm">
-          <Typography variant="body1" align="center">Sairam Engineering college Work manager.</Typography>
+          <Typography variant="body1" align="center">Sairam Engineering college Work management system</Typography>
           <Copyright />
         </Container>
       </footer>

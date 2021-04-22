@@ -152,7 +152,7 @@ export default function User({ user, index, ...props}) {
             <ListItemText primary="College ID" secondary={user.item.cid} />
           </ListItem>
           <Divider />
-          {user.item.type<2 &&
+          {user.item.dept!=null &&
           <>
             <ListItem button>
             <ListItemText primary="Department" secondary={user.item.dept.toUpperCase()} />

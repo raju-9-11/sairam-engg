@@ -42,9 +42,13 @@ export default function AlignItemsList(props) {
   const theme = useTheme();
   const hide = useMediaQuery(theme.breakpoints.down('md'))
   const [page, setPage] = React.useState(1);
-  const [noOfPages] = React.useState(
+  const [noOfPages, setNumber] = React.useState(
     Math.ceil(props.users.length / itemsPerPage)
   );
+
+  useEffect(()=>{
+    setNumber(Math.ceil(props.users.length / itemsPerPage))
+  },[props])
 
 
   const handleChange = (event, value) => {

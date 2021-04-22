@@ -10,7 +10,6 @@ export default function Copyright() {
         Sri Sairam engineering College
       </MuiLink>{' '}
       {new Date().getFullYear()}
-      {'.'}
     </Typography>
   );
 }

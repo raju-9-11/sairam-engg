@@ -13,7 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import firebase from '../../lib/firebase'
 import Fuse from 'fuse.js'
 import Button from '@material-ui/core/Button'
-import { getFields, getSkills } from '../../lib/db'
+import { getFields, getSkills, getUsers } from '../../lib/db'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -211,16 +211,17 @@ export default function Filter() {
 
 
   useEffect(() =>{ 
-    firestore
-      .collection('users')
-      .get()
-      .then((response) => {
-        var lst =[]
-        response.forEach((user) =>{
-          lst.push(user.data());
-        })
-        setUsers(lst)
-      })
+
+    async function getUsersList(){  
+      const response = await getUsers();
+          var lst =[]
+          response.forEach((user) =>{
+            lst.push(user.data());
+          })
+          setUsers(lst)
+        }
+      getUsersList();
+
      getData();
   },[])
 

@@ -37,6 +37,17 @@ import { Grid } from '@material-ui/core';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
+  '@global': {
+    '*::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '*::-webkit-scrollbar-track': {
+      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '*::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+    }
+  },
   root: {
     display: 'flex',
     [theme.breakpoints.up('sm')]: {
@@ -164,7 +175,7 @@ function Dashboard(props) {
   return (
     <>
     {loading && <SimpleBackdrop/>}
-    {user && user.type==0 &&
+    {user && user.type<3 &&
      <div className={classes.root}>
        <Head>
          <title>{tabs[tab].name}</title>
@@ -251,7 +262,7 @@ function Dashboard(props) {
           <Copyright /> */}
         </div>
         </div>}
-        {((!loading && !user) || (user && user.type!=0)) && <Custom />}
+        {((!loading && !user) || (user && user.type>2)) && <Custom />}
         <StickyFooter />
         </>
   );

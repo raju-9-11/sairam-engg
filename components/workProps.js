@@ -69,6 +69,8 @@ export default function WorkProps(props) {
   const [ loading, setLoading ] = useState(false)
   const firestore = firebase.firestore();
   const storage = firebase.storage();
+  const [ remarks, setRemarks ] = useState(props.work.remarks)
+  const [ remError, setError ] = useState('')
   
   const { signupWithEmail } = useAuth();
 
@@ -127,13 +129,20 @@ export default function WorkProps(props) {
     e.preventDefault();
     if(props.work.completed){
       enqueueSnackbar("Upload old files after making changes")
+    }else{
+      if(remarks===''){
+        setError('Remarks cannot be empty');
+        return;
+      }
+      setError('');
     }
     firestore
       .collection('work')
       .doc(props.work.id)
       .set({
         completed: !props.work.completed,
-        userFiles: file.length>0? file.map(val=>val.name) : []
+        userFiles: file.length>0? file.map(val=>val.name) : [],
+        remarks: remarks
       },{merge:true})
       .then((response)=> {
         if(file.length>0 ){
@@ -280,7 +289,7 @@ export default function WorkProps(props) {
                 }}
               />
               </Grid>
-
+          
               {props.work.team!=undefined && props.work.team.length>0 &&
                  <Grid item xs={12}>
                   <TextField
@@ -308,6 +317,7 @@ export default function WorkProps(props) {
                      />
                 </Grid>
               }
+                {props.work.files.length>0 &&
               <Grid item xs={12}>
                 {props.work.files.length>0 &&
                     props.work.files.map((item,index)=>{
@@ -319,10 +329,12 @@ export default function WorkProps(props) {
                             </div>
                         )
                     })
-                }
+                  }
                 </Grid> 
-                <Grid item xs={12}>
+                }
                 {props.work.userFiles.length>0 &&
+                <Grid item xs={12}>
+                 {props.work.userFiles.length>0 &&
                     props.work.userFiles.map((item,index)=>{
                         return(
                             <div className={classes.chip} key={index}>
@@ -332,8 +344,9 @@ export default function WorkProps(props) {
                             </div>
                         )
                     })
-                }
+                  }
                 </Grid> 
+                }
               
             {!props.work.completed &&
               <Grid item xs={6}>
@@ -376,6 +389,22 @@ export default function WorkProps(props) {
                 })
             }
             </Grid>
+            <Grid item xs={12}>
+                  <TextField
+                      autoComplete="off"
+                      name="rem"
+                      fullWidth
+                      disabled={props.work.completed || props.work.assigned.uid!==user.uid}
+                      id="rem"
+                      value={remarks}
+                      onChange={(Event)=>setRemarks(Event.target.value)}
+                      label={"Remarks" }
+                      error={remError!=''}
+                      helperText={remError}
+                      variant="outlined"
+                  />
+                </Grid>
+
           </Grid>
 
           {!props.work.completed && props.work.assigned.uid!==user.uid &&

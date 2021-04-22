@@ -263,6 +263,7 @@ export default function Profileupdate () {
                                   variant="outlined"
                               />
                               </Grid>
+                              {(user.dept!=undefined && user.dept!=null) &&
                               <Grid item xs={12}>
                               <TextField
                                   fullWidth
@@ -273,7 +274,19 @@ export default function Profileupdate () {
                                   value={user.dept.toUpperCase()}
                                   variant="outlined"
                               />
-                              </Grid>
+                              </Grid>}
+                              {(user.dept==undefined || user.dept==null) && 
+                              <Grid item xs={12}>
+                              <TextField
+                                  fullWidth
+                                  name="dept"
+                                  label="Role"
+                                  id="dept"
+                                  disabled
+                                  value={user.type===1?"Dean" :"Office"}
+                                  variant="outlined"
+                              />
+                              </Grid>}
                           </Grid>
                           </Box>
                           <Button

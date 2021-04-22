@@ -290,6 +290,18 @@ export default function AdminWorkProps(props) {
                   variant="outlined"
               />
               </Grid>
+              <Grid item xs={12}>
+                  <TextField
+                      name="rem"
+                      fullWidth
+                      disabled
+                      id="rem"
+                      value={props.work.remarks}
+                      label={"Remarks" }
+                      autoFocus
+                      variant="outlined"
+                  />
+                </Grid>
 
               {props.work.team!=undefined && props.work.team.length>0 &&
                  <Grid item xs={12}>
@@ -318,6 +330,7 @@ export default function AdminWorkProps(props) {
                      />
                 </Grid>
               }
+                {!props.view && props.work.files.length>0 &&
               <Grid item xs={12}>
                 {!props.view && props.work.files.length>0 &&
                     props.work.files.map((item,index)=>{
@@ -331,6 +344,8 @@ export default function AdminWorkProps(props) {
                     })
                 }
                 </Grid> 
+                }
+                {!props.view && props.work.userFiles.length>0 &&
                 <Grid item xs={12}>
                 {!props.view && props.work.userFiles.length>0 &&
                     props.work.userFiles.map((item,index)=>{
@@ -344,6 +359,7 @@ export default function AdminWorkProps(props) {
                     })
                 }
                 </Grid> 
+                }
                 {!props.view && !props.work.approved && 
                 <Grid item xs={12}>
                 <Button onClick={handleSave} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>

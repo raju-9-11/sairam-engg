@@ -26,6 +26,17 @@ import { IconButton } from '@material-ui/core';
 
 const num = Math.floor(Math.random()*17)+1
 const useStyles = makeStyles((theme) => ({
+  '@global': {
+    '*::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '*::-webkit-scrollbar-track': {
+      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '*::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+    }
+  },
   root: {
     height: '100vh',
   },
@@ -76,10 +87,10 @@ function Home() {
     async function checkPage(){
       if(firebaseUser){
         const userD = (await getUserDetails(firebaseUser.uid)).data(); 
-        if(userD.type===1){
+        if(userD.type===3){
           router.push('/admin')
         }
-        else if(userD.type===2){
+        else if(userD.type===4){
           router.push('/principal')
         }
         else{

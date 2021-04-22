@@ -62,7 +62,7 @@ export default function AssignWork(props) {
   const { user } = useAuth();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const types = typeList[user.type-1]
+  const types = typeList[user.type]
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [  workName, setWorkName ] = useState('');
@@ -166,7 +166,8 @@ export default function AssignWork(props) {
             createdAt: new Date(),
             dueDate: selectedDate,
             approved:false,
-            owner_type: self.type
+            owner_type: self.type,
+            remarks:""
           }
 
 
