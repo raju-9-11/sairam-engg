@@ -152,6 +152,13 @@ export default function User({ user, index, ...props}) {
             <ListItemText primary="College ID" secondary={user.item.cid} />
           </ListItem>
           <Divider />
+          {user.item.type<2 &&
+          <>
+            <ListItem button>
+            <ListItemText primary="Department" secondary={user.item.dept.toUpperCase()} />
+          </ListItem>
+          <Divider />
+          </>}
           <ListItem button onClick={()=>navigator.clipboard.writeText(user.item.uid)}>
             <ListItemText primary="User ID" secondary={user.item.uid} />
           </ListItem>

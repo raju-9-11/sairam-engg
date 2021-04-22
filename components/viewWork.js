@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function ViewAssignedWork() {
+export default function ViewWork() {
   // const activeWork = data.assignedWork;
   const classes = useStyles();
 
@@ -36,7 +36,7 @@ export default function ViewAssignedWork() {
           .onSnapshot(async (response) => {
             let lst = []
             for(const doc of response.docs ){
-              if(doc.data().assigned===user.uid || ( doc.data().team!=undefined && doc.data().team.includes(user.uid) )){
+              if(doc.data().approved==false && (doc.data().assigned===user.uid || ( doc.data().team!=undefined && doc.data().team.includes(user.uid) ))){
                 const currWork = await getFormattedWork(doc.data(),doc.id);
                 lst.push(currWork)
               }

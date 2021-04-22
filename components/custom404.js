@@ -7,6 +7,7 @@ import Head from 'next/head'
 const useStyles = makeStyles((theme) => ({
   root: {
     display:'flex',
+    minHeight: '74vh',
     flexDirection:'column',
     alignItems:'center',
     margin:theme.spacing(10)

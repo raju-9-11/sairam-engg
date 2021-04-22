@@ -18,6 +18,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import FormDialog from '../components/LoginComponents/registerModal';
 import SimpleBackdrop from '../components/backDrop';
+import firebase from '../lib/firebase'
+import { getUserDetails } from '../lib/db';
+import { IconButton } from '@material-ui/core';
 // import withLogin from '../components/LoginComponents/withLogin';
 
 
@@ -46,6 +49,11 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
       marginTop: '3vh'
+  },
+  logos: {
+    display:'flex',
+    flexDirection:'column',
+    alignItems:'center'
   }
 }));
 
@@ -64,17 +72,22 @@ function Home() {
   }
 
   useEffect(()=>{
-    if(user){
-      if(user.type===0){
-        router.push('/dashboard')
-      }
-      else if(user.type===1){
-        router.push('/admin')
-      }
-      else if(user.type===2){
-        router.push('/principal')
+    const firebaseUser = firebase.auth().currentUser;
+    async function checkPage(){
+      if(firebaseUser){
+        const userD = (await getUserDetails(firebaseUser.uid)).data(); 
+        if(userD.type===1){
+          router.push('/admin')
+        }
+        else if(userD.type===2){
+          router.push('/principal')
+        }
+        else{
+          router.push('/dashboard')
+        }
       }
     }
+    checkPage();
   },[user,loading])
 
 
@@ -170,6 +183,12 @@ function Home() {
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
+              <Grid item className={classes.logos}>
+                <IconButton  disabled> 
+                  <img width={100} src="/Raise.png" />
+                  <img width={100} src="/EOMS.png" />
+                </IconButton>
+              </Grid>
             </Box>
           </Box>
         </Grid>

@@ -41,6 +41,9 @@ import Skillset from '../../components/userComponents/skillset';
 import Foe from '../../components/userComponents/foe';
 import HomeWorkIcon from '@material-ui/icons/HomeWork';
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import StickyFooter from '../../components/footer';
+import { Grid, Menu, MenuItem } from '@material-ui/core';
+import { AccountCircle, ArrowDownward } from '@material-ui/icons';
 
 
 const drawerWidth = 240;
@@ -49,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
   root: { 
     paddingTop:'3vw',
     display: 'flex',
+    minHeight: '90.5vh',
     [theme.breakpoints.up('sm')]: {
       paddingLeft:'10vh'
     },
@@ -73,6 +77,10 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  toolbar : {
+    padding:'2vh',
+    display:'flex',
+  },
   // necessary for content to be below app bar
   // toolbar: theme.mixins.toolbar,
   drawerPaper: {
@@ -82,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
-  footer: {
+  element: {
     width:'100%',
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
@@ -272,7 +280,6 @@ function Admin(props) {
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
-
   return (
     <>
      {loading && <SimpleBackdrop/>}
@@ -283,18 +290,33 @@ function Admin(props) {
        </Head>
         <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>
-            <IconButton
-                color="secondary"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                className={classes.menuButton}
-            >
-                <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap>
-                {tabs[tab].name}
-            </Typography>
+              <IconButton
+                    color="secondary"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    className={classes.menuButton}
+                >
+                    <MenuIcon />
+                </IconButton>
+              <Grid 
+                justify="space-between"
+                container 
+                spacing={24}
+                className={classes.toolbar}
+                >
+                <Grid item>
+                <Typography variant="h6" noWrap>
+                    {tabs[tab].name}
+                </Typography>
+                </Grid>
+              </Grid>
+              <IconButton  disabled> 
+                <img width={100} src="/Raise.png" />
+              </IconButton>
+              <IconButton  disabled> 
+                <img width={100} src="/EOMS.png" />
+              </IconButton>
             </Toolbar>
         </AppBar>
         <nav className={classes.drawer} aria-label="mailbox folders">
@@ -335,11 +357,12 @@ function Admin(props) {
             </Drawer>
             </Hidden>
         </nav>
-        <footer className={classes.footer} >
+        <div className={classes.element} >
           {tabs[tab].elem}
-        </footer>
+        </div>
         </div>}
         {((!loading && !user) || (user && user.type!=1)) && <Custom />}
+        <StickyFooter />
         </>
   );
 }

@@ -29,14 +29,14 @@ export default function ViewAssignedWork() {
   const firestore = firebase.firestore();
 
   useEffect(()=>{
-    async function getData(){
+    function getData(){
       if(user){
         firestore
           .collection('work')
           .onSnapshot(async (response) => {
             let lst = []
             for(const doc of response.docs ){
-              if(doc.data().user===user.uid ){
+              if(doc.data().approved==false && doc.data().user===user.uid ){
                 const currWork = await getFormattedWork(doc.data(),doc.id);
                 lst.push(currWork)
               }

@@ -36,6 +36,8 @@ import ViewAssignedWork from '../../components/AdminComponents/viewAssignedWork'
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import Report from '../../components/AdminComponents/report';
 import Head from 'next/head';
+import StickyFooter from '../../components/footer';
+import { Grid } from '@material-ui/core';
 
 
 const drawerWidth = 240;
@@ -44,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
   root: { 
     paddingTop:'3vw',
     display: 'flex',
+    minHeight: '90.5vh',
     [theme.breakpoints.up('sm')]: {
       paddingLeft:'10vh'
     },
@@ -238,19 +241,34 @@ function Principal(props) {
          <title>{tabs[tab].name}</title>
        </Head>
         <AppBar position="fixed" className={classes.appBar}>
-            <Toolbar>
-            <IconButton
-                color="secondary"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                className={classes.menuButton}
-            >
-                <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap>
-                {tabs[tab].name}
-            </Typography>
+          <Toolbar>
+              <IconButton
+                    color="secondary"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    className={classes.menuButton}
+                >
+                    <MenuIcon />
+                </IconButton>
+              <Grid
+                justify="space-between"
+                container 
+                spacing={24}
+                className={classes.toolbar}
+                >
+                <Grid item>
+                <Typography variant="h6" noWrap>
+                    {tabs[tab].name}
+                </Typography>
+                </Grid>
+              </Grid>
+              <IconButton  disabled> 
+                <img width={100} src="/Raise.png" />
+              </IconButton>
+              <IconButton  disabled> 
+                <img width={100} src="/EOMS.png" />
+              </IconButton>
             </Toolbar>
         </AppBar>
         <nav className={classes.drawer} aria-label="mailbox folders">
@@ -289,11 +307,12 @@ function Principal(props) {
             </Drawer>
             </Hidden>
         </nav>
-        <footer className={classes.footer} >
+        <div className={classes.footer} >
           {tabs[tab].elem}
-        </footer>
+        </div>
         </div>}
         {((!loading && !user) || (user && user.type!=2)) && <Custom />}
+        <StickyFooter />
         </>
   );
 }
