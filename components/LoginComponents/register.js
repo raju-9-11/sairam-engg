@@ -22,9 +22,16 @@ import { depts, officedepts } from '../../lib/var'
 
 
 const useStyles = makeStyles({
-  root: {
-  },
-  form:{
+  '@global': {
+    '*::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '*::-webkit-scrollbar-track': {
+      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '*::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.1)',
+    }
   },
   button: {
     marginTop: '3vh'
@@ -184,18 +191,20 @@ export default function Register() {
               </Grid>
                {!office && 
                <Grid item xs={12}>
-              <FormControl disabled={office}  component="fieldset">
+              <FormControl  disabled={office}  component="fieldset">
               <FormLabel component="legend">Department</FormLabel>
-              <RadioGroup  value={dept} onChange={(Event)=>setDept(Event.target.value)} row aria-label="position" name="position" defaultValue="top">
+              <RadioGroup style={{maxHeight:'20em', width:'100%',overflow:'scroll',}} value={dept} onChange={(Event)=>setDept(Event.target.value)} col  aria-label="position" name="position" defaultValue="top">
                 {depts.map((dep,index)=>{
                   return (  
-                  <FormControlLabel
-                      key={index}
-                      value={dep.value}
-                      control={<Radio color="primary" />}
-                      label={dep.label}
-                      labelPlacement="start"
-                    />)
+                    <div>
+                    <FormControlLabel
+                        key={index}
+                        value={dep.value}
+                        control={<Radio color="primary" />}
+                        label={dep.label}
+                        labelPlacement="end"
+                      />
+                      </div>)
                   })
                 }
               </RadioGroup>
